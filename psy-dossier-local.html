@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark" data-density="normal">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PsyTrack V6</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+
+/* ═══════════════════════════════════════════════
+   THÈME SOMBRE (défaut)
+═══════════════════════════════════════════════ */
+:root,[data-theme="dark"]{
+  --bg:    #080a0f; --bg2:#0d1018; --bg3:#121520; --bg4:#171b26;
+  --surf:  #1c2030; --surf2:#222840;
+  --bd:    rgba(255,255,255,0.06);
+  --bd2:   rgba(255,255,255,0.11);
+  --bd3:   rgba(255,255,255,0.20);
+  --t1:#eef0f8; --t2:#8a90aa; --t3:#4a5070;
+  --card-bg:var(--bg3);
+  --topbar-bg:rgba(8,10,15,0.88);
+  --sb-bg:var(--bg2);
+  --input-bg:var(--bg2);
+  --hover-light:rgba(255,255,255,0.018);
+  --shadow-card:0 2px 20px rgba(0,0,0,0.4);
+  --shadow-lg:0 16px 48px rgba(0,0,0,0.55);
+}
+
+/* ═══════════════════════════════════════════════
+   THÈME CLAIR
+═══════════════════════════════════════════════ */
+[data-theme="light"]{
+  --bg:#f0f2f8; --bg2:#e6e9f4; --bg3:#ffffff; --bg4:#f8f9fd;
+  --surf:#eceef8; --surf2:#dde0f0;
+  --bd:  rgba(0,0,0,0.07);
+  --bd2: rgba(0,0,0,0.12);
+  --bd3: rgba(0,0,0,0.22);
+  --t1:#1a1d2e; --t2:#555a7a; --t3:#9399b8;
+  --card-bg:#ffffff;
+  --topbar-bg:rgba(240,242,248,0.90);
+  --sb-bg:#e6e9f4;
+  --input-bg:#f0f2f8;
+  --hover-light:rgba(0,0,0,0.025);
+  --shadow-card:0 2px 16px rgba(0,0,0,0.08);
+  --shadow-lg:0 16px 48px rgba(0,0,0,0.14);
+}
+
+/* ═══════════════════════════════════════════════
+   COULEURS ACCENT (identiques dans les 2 thèmes)
+═══════════════════════════════════════════════ */
+:root{
+  --cyan:#00e5c8;   --cyanD:rgba(0,229,200,0.12);   --cyanG:rgba(0,229,200,0.25);
+  --blue:#4d7cff;   --blueD:rgba(77,124,255,0.12);
+  --violet:#9b6dff; --violetD:rgba(155,109,255,0.12);
+  --rose:#ff6b9d;   --roseD:rgba(255,107,157,0.12);
+  --amber:#ffb547;  --amberD:rgba(255,181,71,0.12);
+  --red:#ff4d6a;    --redD:rgba(255,77,106,0.12);
+  --green:#36d986;  --greenD:rgba(54,217,134,0.12);
+  --teal:#22d3ee;   --tealD:rgba(34,211,238,0.12);
+  --fH:'Syne',sans-serif; --fB:'DM Sans',sans-serif;
+  --r:14px; --rs:9px;
+  --ease:cubic-bezier(0.4,0,0.2,1);
+  --tr:0.22s;
+  --sb:72px; --sb2:272px;
+}
+
+
+/* DENSITY */
+[data-density="compact"]{--pad-page:18px 22px 60px;--pad-card:12px 16px;--pad-cb:16px 18px;--gap-card:12px;--fs-base:13px}
+[data-density="normal"] {--pad-page:32px 36px 90px;--pad-card:18px 22px;--pad-cb:26px 24px;--gap-card:18px;--fs-base:14px}
+[data-density="spacious"]{--pad-page:48px 52px 110px;--pad-card:24px 28px;--pad-cb:36px 32px;--gap-card:26px;--fs-base:15px}
+body{font-size:var(--fs-base,14px)}
+.page{padding:var(--pad-page,32px 36px 90px)}
+.card{margin-bottom:var(--gap-card,18px)}
+.ch{padding:var(--pad-card,18px 22px)}
+.cb{padding:var(--pad-cb,26px 24px)}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--fB);background:var(--bg);color:var(--t1);min-height:100vh;font-size:14px;line-height:1.6;overflow-x:hidden;transition:background var(--tr),color var(--tr)}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--surf2);border-radius:99px}
+::selection{background:var(--cyanD);color:var(--cyan)}
+
+/* CURSOR */
+body{cursor:none}
+#cursor{position:fixed;pointer-events:none;z-index:99999}
+#cursor-dot{width:6px;height:6px;background:var(--cyan);border-radius:50%;position:absolute;transform:translate(-50%,-50%);box-shadow:0 0 8px var(--cyan);transition:transform .1s}
+#cursor-ring{width:28px;height:28px;border:1.5px solid rgba(0,229,200,0.6);border-radius:50%;position:absolute;transform:translate(-50%,-50%);transition:width .15s,height .15s,opacity .15s}
+.cursor-hover #cursor-ring{width:42px;height:42px;opacity:.9}
+.cursor-click #cursor-dot{transform:translate(-50%,-50%) scale(1.8)}
+button,a,[onclick]{cursor:none}
+input,textarea,select{cursor:text}
+
+
+/* ═══════════════════════════════════════════════
+   AUTH
+═══════════════════════════════════════════════ */
+#auth{display:flex;min-height:100vh;position:relative;overflow:hidden}
+
+/* PARTICLES */
+#particles-canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
+.auth-left,.auth-right{position:relative;z-index:2}
+
+.auth-glow{position:absolute;pointer-events:none;z-index:1}
+.auth-glow.g1{width:700px;height:700px;background:radial-gradient(circle,rgba(0,229,200,0.07),transparent 65%);top:-120px;left:-120px}
+.auth-glow.g2{width:550px;height:550px;background:radial-gradient(circle,rgba(77,124,255,0.08),transparent 65%);bottom:-80px;right:260px}
+.auth-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.03) 1px,transparent 1px);background-size:28px 28px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent)}
+[data-theme="light"] .auth-dots{background-image:radial-gradient(rgba(0,0,0,0.04) 1px,transparent 1px)}
+
+.auth-left{flex:1;display:flex;flex-direction:column;justify-content:center;padding:80px 64px;position:relative;z-index:1}
+.al-logo{display:flex;align-items:center;gap:12px;margin-bottom:52px}
+.al-logo-box{width:48px;height:48px;background:linear-gradient(135deg,var(--cyan),var(--blue));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 32px var(--cyanG),inset 0 1px 0 rgba(255,255,255,0.25);animation:logoPulse 3s ease infinite}
+@keyframes logoPulse{0%,100%{box-shadow:0 0 32px var(--cyanG)}50%{box-shadow:0 0 52px var(--cyanG),0 0 80px rgba(0,229,200,0.1)}}
+.al-logo-name{font-family:var(--fH);font-size:21px;font-weight:800;letter-spacing:-.3px}
+.al-logo-name em{color:var(--cyan);font-style:normal}
+.al-logo-badge{font-size:10px;font-weight:700;padding:2px 9px;background:var(--cyanD);color:var(--cyan);border:1px solid rgba(0,229,200,0.3);border-radius:99px;margin-left:6px;letter-spacing:.05em}
+.al-h{font-family:var(--fH);font-size:48px;font-weight:800;line-height:1.08;letter-spacing:-1.5px;margin-bottom:20px}
+.al-h .gr{background:linear-gradient(90deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.al-sub{font-size:15px;color:var(--t2);font-weight:300;max-width:390px;line-height:1.8;margin-bottom:48px}
+.al-pills{display:flex;flex-wrap:wrap;gap:10px}
+.al-pill{display:flex;align-items:center;gap:8px;padding:8px 16px;background:var(--card-bg);border:1px solid var(--bd2);border-radius:99px;font-size:12px;color:var(--t2);transition:all var(--tr)}
+.al-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+
+.auth-right{width:480px;display:flex;align-items:center;justify-content:center;padding:40px;position:relative;z-index:1}
+.auth-card{width:100%;background:var(--card-bg);border:1px solid var(--bd2);border-radius:22px;padding:42px;box-shadow:var(--shadow-lg);transition:background var(--tr),border-color var(--tr)}
+.ac-title{font-family:var(--fH);font-size:27px;font-weight:800;margin-bottom:5px}
+.ac-sub{font-size:13px;color:var(--t2);margin-bottom:30px}
+.auth-tabs{display:flex;gap:3px;background:var(--bg2);border-radius:var(--rs);padding:4px;margin-bottom:28px;transition:background var(--tr)}
+.auth-tab{flex:1;padding:10px;border:none;background:transparent;border-radius:7px;font-family:var(--fH);font-size:12px;font-weight:700;color:var(--t3);cursor:pointer;transition:all var(--tr) var(--ease)}
+.auth-tab.active{background:var(--surf);color:var(--cyan);box-shadow:0 2px 10px rgba(0,0,0,0.2)}
+.fg{margin-bottom:18px}
+.fl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);margin-bottom:8px}
+.fi{width:100%;padding:12px 16px;background:var(--input-bg);border:1px solid var(--bd2);border-radius:var(--rs);font-family:var(--fB);font-size:14px;color:var(--t1);outline:none;transition:all var(--tr) var(--ease)}
+.fi::placeholder{color:var(--t3)}
+.fi:focus{border-color:var(--cyan);box-shadow:0 0 0 3px var(--cyanD);background:var(--card-bg)}
+.auth-err{display:none;background:var(--redD);border:1px solid rgba(255,77,106,.25);color:var(--red);border-radius:var(--rs);padding:11px 15px;font-size:13px;margin-bottom:16px;animation:shake .3s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.btn-auth{width:100%;padding:14px;background:linear-gradient(135deg,var(--cyan),var(--blue));border:none;border-radius:var(--rs);font-family:var(--fH);font-size:15px;font-weight:700;color:#000;cursor:pointer;transition:all var(--tr) var(--ease);box-shadow:0 6px 24px var(--cyanG);letter-spacing:.02em}
+.btn-auth:hover{transform:translateY(-2px);box-shadow:0 12px 36px var(--cyanG)}
+.btn-auth:active{transform:translateY(0)}
+
+/* ═══════════════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════════════ */
+#app{display:none;min-height:100vh}
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════ */
+.sb{position:fixed;left:0;top:0;bottom:0;width:var(--sb2);background:var(--sb-bg);border-right:1px solid var(--bd);display:flex;flex-direction:column;z-index:300;transition:width var(--tr) var(--ease),background var(--tr);overflow:hidden}
+.sb.collapsed{width:var(--sb)}
+.sb-top{padding:20px 16px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px;min-height:68px}
+.sb-logo-box{width:36px;height:36px;min-width:36px;background:linear-gradient(135deg,var(--cyan),var(--blue));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 16px var(--cyanG);flex-shrink:0}
+.sb-logo-text{font-family:var(--fH);font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;transition:opacity var(--tr),width var(--tr)}
+.sb-logo-text em{color:var(--cyan);font-style:normal}
+.sb.collapsed .sb-logo-text{opacity:0;width:0}
+.sb-collapse-btn{margin-left:auto;width:28px;height:28px;min-width:28px;border-radius:7px;border:1px solid var(--bd2);background:var(--card-bg);color:var(--t2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all var(--tr);flex-shrink:0}
+.sb-collapse-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.sb.collapsed .sb-collapse-btn{transform:rotate(180deg)}
+
+.sb-patient-section{padding:10px;border-bottom:1px solid var(--bd);overflow:hidden;max-height:280px;overflow-y:auto}
+.sb-section-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--t3);padding:4px 6px 8px;white-space:nowrap;transition:opacity var(--tr)}
+.sb.collapsed .sb-section-lbl{opacity:0}
+.sb-dossier-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--rs);cursor:pointer;transition:all var(--tr) var(--ease);border:1px solid transparent;position:relative;margin-bottom:3px}
+.sb-dossier-item:hover{background:var(--surf);border-color:var(--bd)}
+.sb-dossier-item.active{background:var(--cyanD);border-color:rgba(0,229,200,.22)}
+.di-avatar{width:30px;height:30px;min-width:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;border:1px solid var(--bd2)}
+.di-info{overflow:hidden;transition:opacity var(--tr),width var(--tr)}
+.sb.collapsed .di-info{opacity:0;width:0}
+.di-name{font-family:var(--fH);font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t1)}
+.sb-dossier-item.active .di-name{color:var(--cyan)}
+.di-tag{font-size:10px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.di-del{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:5px;border:none;background:none;color:var(--t3);cursor:pointer;display:none;align-items:center;justify-content:center;font-size:11px;transition:all var(--tr)}
+.sb-dossier-item:hover .di-del{display:flex}
+.di-del:hover{background:var(--redD);color:var(--red)}
+.btn-new-dossier{display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;border-radius:var(--rs);border:1px dashed var(--bd2);background:none;color:var(--t3);font-family:var(--fB);font-size:12px;cursor:pointer;transition:all var(--tr);margin-top:6px;white-space:nowrap;overflow:hidden}
+.btn-new-dossier:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyanD)}
+.sb.collapsed .btn-new-dossier span{display:none}
+
+.sb-nav{flex:1;padding:12px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.sb-nav-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--t3);padding:12px 6px 5px;white-space:nowrap;transition:opacity var(--tr)}
+.sb.collapsed .sb-nav-lbl{opacity:0}
+.nav-it{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--rs);cursor:pointer;transition:all var(--tr) var(--ease);border:1px solid transparent;color:var(--t2);font-size:13px;position:relative}
+.nav-it:hover{background:var(--surf);border-color:var(--bd);color:var(--t1);transform:translateX(2px)}
+.nav-it.active{background:var(--cyanD);border-color:rgba(0,229,200,.2);color:var(--cyan)}
+.ni-icon{width:30px;height:30px;min-width:30px;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all var(--tr)}
+.nav-it.active .ni-icon{background:var(--cyanD)}
+.ni-lbl{white-space:nowrap;overflow:hidden;transition:opacity var(--tr),width var(--tr)}
+.sb.collapsed .ni-lbl{opacity:0;width:0}
+.ni-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;background:var(--cyanD);color:var(--cyan);white-space:nowrap;transition:opacity var(--tr)}
+.sb.collapsed .ni-badge{opacity:0;width:0;padding:0;overflow:hidden}
+.sb.collapsed .nav-it:hover::after{content:attr(data-tooltip);position:absolute;left:calc(var(--sb) + 8px);top:50%;transform:translateY(-50%);background:var(--surf2);color:var(--t1);font-size:12px;padding:6px 12px;border-radius:7px;border:1px solid var(--bd2);white-space:nowrap;pointer-events:none;z-index:999;box-shadow:var(--shadow-lg)}
+
+.sb-foot{padding:12px 10px;border-top:1px solid var(--bd);display:flex;flex-direction:column;gap:3px}
+.sb-user-badge{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--rs);background:var(--bg3);border:1px solid var(--bd);margin-bottom:6px;overflow:hidden;transition:background var(--tr),border-color var(--tr)}
+.sub-avatar{width:32px;height:32px;min-width:32px;border-radius:9px;background:linear-gradient(135deg,var(--cyan),var(--blue));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#000;flex-shrink:0;font-family:var(--fH)}
+.sub-info{overflow:hidden;transition:opacity var(--tr)}
+.sb.collapsed .sub-info{opacity:0}
+.sub-name{font-family:var(--fH);font-size:12px;font-weight:700;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub-role{font-size:10px;color:var(--t3)}
+.sb-action{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--rs);border:none;background:none;color:var(--t2);font-family:var(--fB);font-size:13px;cursor:pointer;transition:all var(--tr);width:100%;text-align:left;white-space:nowrap;overflow:hidden}
+.sb-action:hover{background:var(--surf);color:var(--t1)}
+.sb-action.dng:hover{background:var(--redD);color:var(--red)}
+.sb-action .sa-icon{width:30px;height:30px;min-width:30px;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:background var(--tr)}
+.sb-action span{transition:opacity var(--tr)}
+.sb.collapsed .sb-action span{opacity:0}
+
+/* THEME TOGGLE BTN */
+.theme-toggle{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--rs);border:none;background:none;color:var(--t2);font-family:var(--fB);font-size:13px;cursor:pointer;transition:all var(--tr);width:100%;text-align:left;white-space:nowrap;overflow:hidden}
+.theme-toggle:hover{background:var(--surf);color:var(--t1)}
+.theme-toggle .sa-icon{width:30px;height:30px;min-width:30px;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.theme-toggle .tt-track{width:34px;height:18px;background:var(--surf2);border-radius:99px;position:relative;margin-left:auto;flex-shrink:0;border:1px solid var(--bd2);transition:background var(--tr)}
+.theme-toggle .tt-thumb{width:12px;height:12px;background:var(--t3);border-radius:50%;position:absolute;top:2px;left:2px;transition:all var(--tr)}
+[data-theme="light"] .theme-toggle .tt-track{background:var(--cyanD);border-color:rgba(0,229,200,.3)}
+[data-theme="light"] .theme-toggle .tt-thumb{background:var(--cyan);transform:translateX(16px)}
+.sb.collapsed .theme-toggle span,.sb.collapsed .theme-toggle .tt-track{opacity:0}
+
+/* ═══════════════════════════════════════════════
+   MAIN
+═══════════════════════════════════════════════ */
+.main{margin-left:var(--sb2);min-height:100vh;display:flex;flex-direction:column;transition:margin-left var(--tr) var(--ease)}
+.main.collapsed{margin-left:var(--sb)}
+
+.topbar{height:64px;background:var(--topbar-bg);border-bottom:1px solid var(--bd);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 32px;transition:background var(--tr),border-color var(--tr)}
+.tb-left{display:flex;align-items:center;gap:14px}
+.tb-dossier-badge{display:flex;align-items:center;gap:8px;padding:6px 14px;background:var(--surf);border:1px solid var(--bd2);border-radius:99px;font-size:12px;transition:all var(--tr)}
+.tdb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.tdb-name{font-weight:600;color:var(--t1)}
+.tb-page-title{font-family:var(--fH);font-size:17px;font-weight:700;color:var(--t1)}
+.tb-right{display:flex;align-items:center;gap:10px}
+.save-pill{display:flex;align-items:center;gap:6px;padding:6px 14px;background:var(--greenD);border:1px solid rgba(54,217,134,.25);border-radius:99px;font-size:12px;color:var(--green);opacity:0;transition:opacity .35s;pointer-events:none}
+.save-pill.show{opacity:1}
+.s-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.6s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.btn-tb{display:flex;align-items:center;gap:7px;padding:8px 16px;border-radius:var(--rs);border:1px solid var(--bd2);background:var(--surf);color:var(--t2);font-family:var(--fB);font-size:13px;font-weight:500;cursor:pointer;transition:all var(--tr)}
+.btn-tb:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyanD)}
+
+/* ═══════════════════════════════════════════════
+   PAGES
+═══════════════════════════════════════════════ */
+.page{display:none;padding:32px 36px 90px;opacity:0;transform:translateY(10px);transition:opacity .28s var(--ease),transform .28s var(--ease)}
+.page.active{display:block}
+.page.visible{opacity:1;transform:translateY(0)}
+
+/* ═══════════════════════════════════════════════
+   DASHBOARD V5 — redesign visuel
+═══════════════════════════════════════════════ */
+.dash-hero{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;margin-bottom:28px}
+.stat-c{background:var(--card-bg);border:1px solid var(--bd);border-radius:16px;padding:24px 22px;cursor:pointer;transition:all .25s var(--ease);position:relative;overflow:hidden}
+.stat-c::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 60%,rgba(255,255,255,0.02));pointer-events:none}
+.stat-c:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--bd2)}
+.stat-c .sc-bar{height:3px;width:48px;border-radius:99px;margin-bottom:16px}
+.stat-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-bottom:6px}
+.stat-val{font-family:var(--fH);font-size:36px;font-weight:800;line-height:1;margin-bottom:4px;transition:color .2s}
+.stat-sub{font-size:11px;color:var(--t3)}
+.sc-c .sc-bar{background:var(--cyan)}.sc-c .stat-val{color:var(--cyan)}
+.sc-b .sc-bar{background:var(--blue)}.sc-b .stat-val{color:var(--blue)}
+.sc-g .sc-bar{background:var(--green)}.sc-g .stat-val{color:var(--green)}
+.sc-a .sc-bar{background:var(--amber)}.sc-a .stat-val{color:var(--amber)}
+
+/* Progress ring dans le stat progression */
+.stat-ring-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-bottom:4px}
+.stat-ring{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--bd2);stroke-width:4}
+.ring-fill{fill:none;stroke:var(--green);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .8s var(--ease)}
+
+.dash-bottom{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+.dash-section-title{font-family:var(--fH);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--t3);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.dash-section-title::after{content:'';flex:1;height:1px;background:var(--bd2)}
+
+/* Timeline redesign */
+.dash-card{background:var(--card-bg);border:1px solid var(--bd);border-radius:16px;padding:24px;transition:background var(--tr),border-color var(--tr)}
+.tl-wrap{position:relative;padding-left:20px}
+.tl-wrap::before{content:'';position:absolute;left:4px;top:8px;bottom:8px;width:1px;background:linear-gradient(to bottom,var(--cyan),var(--blue),transparent)}
+.tl-item{position:relative;padding-bottom:18px;animation:tlIn .35s var(--ease) both}
+@keyframes tlIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.tl-item::before{content:'';position:absolute;left:-17px;top:5px;width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);transition:background .2s}
+.tl-type{font-size:11px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.tl-desc{font-size:13px;color:var(--t2);line-height:1.55}
+
+/* Dossiers mini-liste dans dashboard */
+.dos-mini-list{display:flex;flex-direction:column;gap:8px}
+.dos-mini-item{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--bg2);border:1px solid var(--bd);border-radius:11px;cursor:pointer;transition:all var(--tr)}
+.dos-mini-item:hover{border-color:var(--bd2);background:var(--surf);transform:translateX(3px)}
+.dos-mini-item.active-dos{border-color:rgba(0,229,200,.25);background:var(--cyanD)}
+.dmi-ava{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;border:1px solid var(--bd2)}
+.dmi-info{flex:1;overflow:hidden}
+.dmi-name{font-family:var(--fH);font-size:13px;font-weight:700;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dmi-meta{font-size:11px;color:var(--t3)}
+.dmi-pct{font-family:var(--fH);font-size:13px;font-weight:700;color:var(--t2);flex-shrink:0}
+.dmi-pctbar{width:40px;height:4px;background:var(--bd2);border-radius:99px;overflow:hidden;flex-shrink:0}
+.dmi-pctfill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .5s var(--ease)}
+
+/* ═══════════════════════════════════════════════
+   CARDS
+═══════════════════════════════════════════════ */
+.card{background:var(--card-bg);border:1px solid var(--bd);border-radius:16px;margin-bottom:20px;overflow:hidden;transition:border-color var(--tr),box-shadow var(--tr),background var(--tr)}
+.card:hover{border-color:var(--bd2);box-shadow:var(--shadow-card)}
+.card.glow{border-color:var(--cyan);box-shadow:0 0 0 1px var(--cyanD),var(--shadow-card)}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;cursor:pointer;transition:background var(--tr);user-select:none;border-radius:16px 16px 0 0}
+.ch:hover{background:var(--hover-light)}
+.cb.open ~ .ch,.cb:not(.open) + .ch{border-radius:16px}
+.ch-left{display:flex;align-items:center;gap:14px}
+.c-ico{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:transform .25s var(--ease)}
+.ch:hover .c-ico{transform:scale(1.08) rotate(-2deg)}
+.ic-cyan  {background:var(--cyanD);  box-shadow:inset 0 0 0 1px rgba(0,229,200,.18)}
+.ic-blue  {background:var(--blueD);  box-shadow:inset 0 0 0 1px rgba(77,124,255,.18)}
+.ic-violet{background:var(--violetD);box-shadow:inset 0 0 0 1px rgba(155,109,255,.18)}
+.ic-rose  {background:var(--roseD);  box-shadow:inset 0 0 0 1px rgba(255,107,157,.18)}
+.ic-amber {background:var(--amberD); box-shadow:inset 0 0 0 1px rgba(255,181,71,.18)}
+.ic-red   {background:var(--redD);   box-shadow:inset 0 0 0 1px rgba(255,77,106,.18)}
+.ic-green {background:var(--greenD); box-shadow:inset 0 0 0 1px rgba(54,217,134,.18)}
+.ic-teal  {background:var(--tealD);  box-shadow:inset 0 0 0 1px rgba(34,211,238,.18)}
+.ch-title{font-family:var(--fH);font-size:14px;font-weight:700;color:var(--t1)}
+.ch-sub{font-size:11px;color:var(--t3);margin-top:2px}
+.ch-tog{width:28px;height:28px;border-radius:7px;border:1px solid var(--bd);background:var(--bg2);color:var(--t3);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;transition:all var(--tr);flex-shrink:0}
+.ch-tog:hover{border-color:var(--bd2);color:var(--t1)}
+.cb{border-top:1px solid var(--bd);padding:26px 24px;display:none}
+.cb.open{display:block;animation:cbIn .25s var(--ease)}
+@keyframes cbIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════════════════════════════════════════════
+   FORM
+═══════════════════════════════════════════════ */
+.flbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-bottom:9px;display:block}
+.fta{width:100%;background:var(--input-bg);border:1px solid var(--bd2);border-radius:var(--rs);padding:14px 16px;font-family:var(--fB);font-size:13.5px;line-height:1.8;color:var(--t1);resize:vertical;outline:none;transition:all var(--tr);min-height:120px}
+.fta::placeholder{color:var(--t3)}
+.fta:focus{border-color:var(--cyan);background:var(--card-bg);box-shadow:0 0 0 3px var(--cyanD)}
+
+.ib{border-radius:var(--rs);padding:13px 16px;margin-bottom:18px;font-size:12.5px;line-height:1.65;border-left:3px solid;display:flex;gap:11px}
+.ib-ico{font-size:14px;flex-shrink:0;margin-top:1px}
+.ib strong{font-weight:600;display:block;margin-bottom:2px}
+.ib-c{background:var(--cyanD);border-color:var(--cyan);color:#7ff5ec}
+.ib-o{background:var(--amberD);border-color:var(--amber);color:#ffd08a}
+.ib-r{background:var(--redD);border-color:var(--red);color:#ff9aaa}
+.ib-g{background:var(--greenD);border-color:var(--green);color:#7ae8b3}
+.ib-v{background:var(--violetD);border-color:var(--violet);color:#c4a9ff}
+[data-theme="light"] .ib-c{color:#007a6d}
+[data-theme="light"] .ib-o{color:#8a5800}
+[data-theme="light"] .ib-r{color:#9a0020}
+[data-theme="light"] .ib-g{color:#1a6e44}
+[data-theme="light"] .ib-v{color:#4a1fa0}
+
+/* TABLE */
+.tw{border-radius:var(--rs);border:1px solid var(--bd2);overflow:hidden;overflow-x:auto}
+.et{width:100%;border-collapse:collapse;font-size:13px}
+.et thead th{background:var(--bg2);padding:11px 13px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);border-bottom:1px solid var(--bd2);white-space:nowrap}
+.et tbody tr{border-bottom:1px solid var(--bd);transition:background var(--tr)}
+.et tbody tr:last-child{border-bottom:none}
+.et tbody tr:hover{background:var(--hover-light)}
+.et td{padding:6px 8px;vertical-align:top}
+.et td input,.et td textarea{width:100%;background:transparent;border:1px solid transparent;border-radius:6px;padding:7px 9px;font-family:var(--fB);font-size:13px;color:var(--t1);outline:none;transition:all var(--tr);resize:vertical;min-height:34px}
+.et td input::placeholder,.et td textarea::placeholder{color:var(--t3)}
+.et td input:focus,.et td textarea:focus{border-color:var(--cyan);background:var(--cyanD)}
+.btn-del-row{background:none;border:none;color:var(--t3);cursor:pointer;font-size:15px;padding:5px 7px;border-radius:6px;transition:all var(--tr);display:flex;align-items:center}
+.btn-del-row:hover{background:var(--redD);color:var(--red)}
+.btn-add-row{margin-top:14px;display:inline-flex;align-items:center;gap:8px;padding:9px 18px;background:transparent;border:1px dashed var(--bd2);border-radius:var(--rs);color:var(--t3);font-family:var(--fB);font-size:13px;cursor:pointer;transition:all var(--tr)}
+.btn-add-row:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyanD)}
+
+/* QUESTIONS */
+.prog-wrap{margin-bottom:24px;padding:20px;background:var(--bg2);border-radius:12px;border:1px solid var(--bd)}
+.prog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.prog-lbl{font-size:12px;color:var(--t2)}
+.prog-pct{font-family:var(--fH);font-size:32px;font-weight:800;color:var(--cyan);line-height:1}
+.prog-bar{height:6px;background:var(--bd2);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));border-radius:99px;transition:width .6s var(--ease);box-shadow:0 0 12px var(--cyanG)}
+.th-block{margin-bottom:22px}
+.th-tag{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;padding:4px 12px;border-radius:99px;margin-bottom:10px;border:1px solid}
+.tt-r{background:var(--redD);color:var(--red);border-color:rgba(255,77,106,.3)}
+.tt-b{background:var(--blueD);color:var(--blue);border-color:rgba(77,124,255,.3)}
+.tt-y{background:var(--amberD);color:var(--amber);border-color:rgba(255,181,71,.3)}
+.tt-g{background:var(--greenD);color:var(--green);border-color:rgba(54,217,134,.3)}
+.tt-v{background:var(--violetD);color:var(--violet);border-color:rgba(155,109,255,.3)}
+.tt-c{background:var(--cyanD);color:var(--cyan);border-color:rgba(0,229,200,.3)}
+.tt-ro{background:var(--roseD);color:var(--rose);border-color:rgba(255,107,157,.3)}
+.q-it{display:flex;align-items:flex-start;gap:11px;padding:10px 12px;border-radius:var(--rs);border:1px solid transparent;margin-bottom:4px;transition:all var(--tr);cursor:pointer}
+.q-it:hover{background:var(--surf);border-color:var(--bd);transform:translateX(2px)}
+.q-it.done{background:rgba(54,217,134,.04);border-color:rgba(54,217,134,.1)}
+.q-cb{width:16px;height:16px;accent-color:var(--cyan);flex-shrink:0;margin-top:3px;cursor:pointer}
+.q-txt{flex:1;font-size:13px;color:var(--t2);line-height:1.6;transition:all var(--tr)}
+.q-it.done .q-txt{text-decoration:line-through;color:var(--t3)}
+.q-rm{background:none;border:none;color:var(--t3);cursor:pointer;font-size:12px;padding:2px 5px;border-radius:4px;opacity:0;transition:all var(--tr);flex-shrink:0}
+.q-it:hover .q-rm{opacity:1}
+.q-rm:hover{background:var(--redD);color:var(--red)}
+.add-q-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.aq-sel{padding:10px 13px;background:var(--input-bg);border:1px solid var(--bd2);border-radius:var(--rs);font-family:var(--fB);font-size:13px;color:var(--t2);outline:none;cursor:pointer;transition:all var(--tr)}
+.aq-sel option{background:var(--bg2)}
+.aq-inp{flex:1;min-width:160px;padding:10px 13px;background:var(--input-bg);border:1px solid var(--bd2);border-radius:var(--rs);font-family:var(--fB);font-size:13px;color:var(--t1);outline:none;transition:all var(--tr)}
+.aq-inp::placeholder{color:var(--t3)}
+.aq-inp:focus{border-color:var(--cyan);box-shadow:0 0 0 2px var(--cyanD)}
+.btn-add-q{padding:10px 20px;background:linear-gradient(135deg,var(--cyan),var(--blue));border:none;border-radius:var(--rs);font-family:var(--fH);font-size:13px;font-weight:700;color:#000;cursor:pointer;transition:all var(--tr);box-shadow:0 2px 14px var(--cyanG)}
+.btn-add-q:hover{opacity:.9;transform:translateY(-1px)}
+
+/* DOSSIERS PAGE */
+.dos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px;margin-bottom:28px}
+.dos-card{background:var(--card-bg);border:1px solid var(--bd);border-radius:16px;padding:24px;cursor:pointer;transition:all .25s var(--ease);position:relative;overflow:hidden}
+.dos-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--blue))}
+.dos-card:hover{border-color:var(--bd2);transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.dos-card.active-dos{border-color:rgba(0,229,200,.28)}
+.dos-card.active-dos::before{background:linear-gradient(90deg,var(--cyan),var(--violet))}
+.dc-top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.dc-avatar{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;border:1px solid var(--bd2);flex-shrink:0}
+.dc-meta h3{font-family:var(--fH);font-size:15px;font-weight:700;color:var(--t1)}
+.dc-meta span{font-size:11px;color:var(--t3)}
+.dc-stats{display:flex;gap:16px;margin-bottom:16px}
+.dc-stat{font-size:11px;color:var(--t3)}.dc-stat strong{display:block;font-family:var(--fH);font-size:20px;font-weight:700;color:var(--t2);line-height:1.1}
+.dc-prog{height:4px;background:var(--bd2);border-radius:99px;overflow:hidden;margin-bottom:16px}
+.dc-prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .5s var(--ease)}
+.dc-actions{display:flex;gap:8px}
+.btn-open-dos{flex:1;padding:10px;background:linear-gradient(135deg,var(--cyan),var(--blue));border:none;border-radius:var(--rs);font-family:var(--fH);font-size:12px;font-weight:700;color:#000;cursor:pointer;transition:all var(--tr)}
+.btn-open-dos:hover{opacity:.9;transform:translateY(-1px)}
+.btn-del-dos{padding:10px 13px;background:var(--bg2);border:1px solid var(--bd2);border-radius:var(--rs);color:var(--t3);cursor:pointer;font-size:13px;transition:all var(--tr)}
+.btn-del-dos:hover{background:var(--redD);border-color:rgba(255,77,106,.3);color:var(--red)}
+.btn-add-dos-card{background:var(--card-bg);border:1px dashed var(--bd2);border-radius:16px;padding:36px 22px;cursor:pointer;transition:all .25s var(--ease);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--t3)}
+.btn-add-dos-card:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyanD);transform:translateY(-2px)}
+.btn-add-dos-card .add-icon{font-size:30px}
+.btn-add-dos-card span{font-size:13px;font-weight:600}
+
+/* NEW DOSSIER FORM */
+.new-dos-form{background:var(--card-bg);border:1px solid var(--bd2);border-radius:16px;padding:30px;margin-bottom:22px;display:none;transition:background var(--tr)}
+.new-dos-form.open{display:block;animation:cbIn .22s var(--ease)}
+.ndf-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.emoji-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.emoji-opt{width:38px;height:38px;border-radius:10px;background:var(--bg2);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:all var(--tr)}
+.emoji-opt:hover,.emoji-opt.sel{background:var(--cyanD);border-color:rgba(0,229,200,.35);transform:scale(1.12)}
+.ndf-actions{display:flex;gap:10px;margin-top:18px}
+.btn-ndf-save{padding:11px 26px;background:linear-gradient(135deg,var(--cyan),var(--blue));border:none;border-radius:var(--rs);font-family:var(--fH);font-size:13px;font-weight:700;color:#000;cursor:pointer;transition:all var(--tr)}
+.btn-ndf-save:hover{opacity:.9;transform:translateY(-1px)}
+.btn-ndf-cancel{padding:11px 22px;background:var(--bg2);border:1px solid var(--bd2);border-radius:var(--rs);color:var(--t2);font-family:var(--fB);font-size:13px;cursor:pointer;transition:all var(--tr)}
+.btn-ndf-cancel:hover{border-color:var(--bd3);color:var(--t1)}
+.color-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px}
+.color-opt{width:26px;height:26px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all var(--tr)}
+.color-opt:hover,.color-opt.sel{border-color:rgba(255,255,255,.6);transform:scale(1.2)}
+[data-theme="light"] .color-opt.sel{border-color:rgba(0,0,0,.4)}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .22s}
+.modal-bg.show{opacity:1;pointer-events:all}
+.modal{background:var(--card-bg);border:1px solid var(--bd2);border-radius:18px;padding:32px;max-width:400px;width:100%;box-shadow:var(--shadow-lg);transform:scale(.94) translateY(12px);transition:transform .22s var(--ease),background var(--tr)}
+.modal-bg.show .modal{transform:scale(1) translateY(0)}
+.modal h3{font-family:var(--fH);font-size:18px;font-weight:700;margin-bottom:8px}
+.modal p{font-size:13.5px;color:var(--t2);margin-bottom:24px;line-height:1.7}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end}
+.btn-mc{padding:10px 20px;border-radius:var(--rs);border:1px solid var(--bd2);background:var(--surf);color:var(--t2);font-family:var(--fB);font-size:13px;cursor:pointer;transition:all var(--tr)}
+.btn-mc:hover{border-color:var(--bd3);color:var(--t1)}
+.btn-mo{padding:10px 20px;border-radius:var(--rs);border:none;background:var(--red);color:#fff;font-family:var(--fH);font-size:13px;font-weight:700;cursor:pointer;transition:all var(--tr)}
+.btn-mo:hover{opacity:.85;transform:translateY(-1px)}
+
+.dv{border:none;border-top:1px solid var(--bd);margin:20px 0}
+
+/* STATUS BADGES */
+.status-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;border:1px solid}
+.sb-urgent{background:var(--redD);color:var(--red);border-color:rgba(255,77,106,.3)}
+.sb-encours{background:var(--blueD);color:var(--blue);border-color:rgba(77,124,255,.3)}
+.sb-cloture{background:var(--greenD);color:var(--green);border-color:rgba(54,217,134,.3)}
+.sb-nouveau{background:var(--amberD);color:var(--amber);border-color:rgba(255,181,71,.3)}
+/* DATE on cards */
+.dc-dates{font-size:10px;color:var(--t3);margin-bottom:10px}
+/* RENAME inline */
+h3[contenteditable="true"]{outline:none;border-bottom:1px dashed var(--cyan);padding-bottom:1px}
+/* IMPORT zone */
+.import-zone{border:2px dashed var(--bd2);border-radius:16px;padding:28px;text-align:center;cursor:pointer;transition:all var(--tr);margin-bottom:20px}
+.import-zone:hover,.import-zone.drag-over{border-color:var(--cyan);background:var(--cyanD)}
+.import-zone .iz-icon{font-size:32px;margin-bottom:8px}
+.import-zone p{color:var(--t3);font-size:13px;margin-top:8px}
+/* SAVE BTN */
+.btn-save-manual{display:flex;align-items:center;gap:7px;padding:8px 16px;border-radius:var(--rs);border:none;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#000;font-family:var(--fH);font-size:13px;font-weight:700;cursor:none;transition:all var(--tr);box-shadow:0 3px 14px var(--cyanG)}
+.btn-save-manual:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--cyanG)}
+.btn-save-manual:active{transform:scale(0.95)}
+/* STATUS in new form */
+.ndf-status-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.ndf-status-opt{padding:6px 14px;border-radius:99px;border:1px solid var(--bd2);background:var(--bg2);font-size:12px;font-weight:700;cursor:none;transition:all var(--tr);color:var(--t2)}
+.ndf-status-opt[data-val="urgent"].sel{background:var(--redD);color:var(--red);border-color:rgba(255,77,106,.3)}
+.ndf-status-opt[data-val="en cours"].sel{background:var(--blueD);color:var(--blue);border-color:rgba(77,124,255,.3)}
+.ndf-status-opt[data-val="cloture"].sel{background:var(--greenD);color:var(--green);border-color:rgba(54,217,134,.3)}
+.ndf-status-opt[data-val="nouveau"].sel{background:var(--amberD);color:var(--amber);border-color:rgba(255,181,71,.3)}
+/* EDIT button */
+.btn-edit-dos{padding:9px 11px;background:var(--bg2);border:1px solid var(--bd2);border-radius:var(--rs);color:var(--t3);cursor:none;font-size:13px;transition:all var(--tr)}
+.btn-edit-dos:hover{background:var(--blueD);border-color:rgba(77,124,255,.3);color:var(--blue)}
+.dc-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:6px}
+/* SETTINGS PAGE */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:800px){.settings-grid{grid-template-columns:1fr}}
+.settings-section{background:var(--card-bg);border:1px solid var(--bd);border-radius:16px;padding:24px;transition:background var(--tr),border-color var(--tr)}
+.settings-section:hover{border-color:var(--bd2)}
+.ss-title{font-family:var(--fH);font-size:13px;font-weight:700;color:var(--t1);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.ss-ico{width:32px;height:32px;border-radius:9px;background:var(--cyanD);display:flex;align-items:center;justify-content:center;font-size:15px}
+.setting-row{display:flex;align-items:flex-start;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--bd);gap:12px}
+.setting-row:last-child{border-bottom:none;padding-bottom:0}
+.sr-info{flex:1}
+.sr-label{font-size:13px;font-weight:500;color:var(--t1)}
+.sr-desc{font-size:11px;color:var(--t3);margin-top:2px}
+.sr-control{flex-shrink:0}
+/* Toggle */
+.toggle-sw{width:44px;height:24px;background:var(--surf2);border-radius:99px;position:relative;cursor:none;transition:background var(--tr);border:1px solid var(--bd2);flex-shrink:0}
+.toggle-sw.on{background:var(--cyanD);border-color:rgba(0,229,200,.35)}
+.toggle-sw .ts-thumb{width:16px;height:16px;background:var(--t3);border-radius:50%;position:absolute;top:3px;left:3px;transition:all var(--tr)}
+.toggle-sw.on .ts-thumb{background:var(--cyan);transform:translateX(20px);box-shadow:0 0 8px var(--cyan)}
+/* Segmented */
+.seg-ctrl{display:flex;gap:3px;background:var(--bg2);border-radius:var(--rs);padding:3px;border:1px solid var(--bd)}
+.seg-opt{padding:6px 12px;border:none;background:transparent;border-radius:6px;font-family:var(--fH);font-size:11px;font-weight:700;color:var(--t3);cursor:none;transition:all var(--tr)}
+.seg-opt.active{background:var(--surf);color:var(--cyan);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+/* PW */
+.pw-msg{font-size:12px;margin-top:6px;display:none}
+.pw-msg.show{display:block}
+.pw-ok{color:var(--green)}.pw-err{color:var(--red)}
+/* remember row auth */
+.remember-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:13px;color:var(--t2);cursor:none}
+.remember-row input{accent-color:var(--cyan);width:15px;height:15px}
+/* Sidebar active line */
+.nav-it.active{border-left:3px solid var(--cyan)}
+.sb-dossier-item.active{border-left:3px solid var(--cyan)}
+
+
+@media(max-width:1100px){.dash-hero{grid-template-columns:1fr 1fr}.dash-bottom{grid-template-columns:1fr}}
+@media(max-width:900px){.auth-left{display:none}.auth-right{width:100%}}
+@media(max-width:640px){:root{--sb2:250px}.page{padding:16px 16px 70px}.topbar{padding:0 16px}.dash-hero{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ AUTH ══════════════════ -->
+<div id="cursor"><div id="cursor-dot"></div><div id="cursor-ring"></div></div>
+<div id="auth">
+  <canvas id="particles-canvas"></canvas>
+  <div class="auth-glow g1"></div>
+  <div class="auth-glow g2"></div>
+  <div class="auth-dots"></div>
+  <div class="auth-left">
+    <div class="al-logo">
+      <div class="al-logo-box">🧠</div>
+      <div>
+        <div class="al-logo-name">Psy<em>Track</em> <span class="al-logo-badge">V6</span></div>
+      </div>
+    </div>
+    <div class="al-h">Suivi clinique<br><span class="gr">multi-dossiers</span></div>
+    <p class="al-sub">Gérez plusieurs dossiers de suivi psychologique dans un espace sécurisé, entièrement local — aucune donnée transmise.</p>
+    <div class="al-pills">
+      <div class="al-pill"><span class="dot"></span>100% local, zéro serveur</div>
+      <div class="al-pill"><span class="dot"></span>Comptes isolés — données privées</div>
+      <div class="al-pill"><span class="dot"></span>Thème clair / sombre</div>
+      <div class="al-pill"><span class="dot"></span>Export JSON par dossier</div>
+    </div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-card">
+      <div class="ac-title">Bienvenue</div>
+      <div class="ac-sub">Chaque compte dispose de son propre espace isolé.</div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('login')">Connexion</button>
+        <button class="auth-tab" onclick="switchTab('register')">Nouveau compte</button>
+      </div>
+      <div class="fg"><label class="fl">Identifiant</label><input class="fi" id="a-id" type="text" placeholder="Votre identifiant" autocomplete="username"></div>
+      <div class="fg"><label class="fl">Mot de passe</label><input class="fi" id="a-pw" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+      <div class="remember-row"><input type="checkbox" id="remember-me"><label for="remember-me">Se souvenir de moi</label></div>
+      <div class="auth-err" id="auth-err"></div>
+      <button class="btn-auth" id="auth-btn" onclick="handleAuth()">Se connecter →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ APP ══════════════════ -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sb" id="sb">
+    <div class="sb-top">
+      <div class="sb-logo-box">🧠</div>
+      <div class="sb-logo-text">Psy<em>Track</em> <span style="font-size:9px;color:var(--cyan);font-weight:700;margin-left:2px">V6</span></div>
+      <button class="sb-collapse-btn" onclick="toggleSB()" title="Réduire">◀</button>
+    </div>
+    <div class="sb-patient-section">
+      <div class="sb-section-lbl">Dossiers</div>
+      <div id="sb-dossiers"></div>
+      <button class="btn-new-dossier" onclick="goPage('dossiers');showNewForm()">＋ <span>Nouveau dossier</span></button>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-nav-lbl">Vue d'ensemble</div>
+      <div class="nav-it active" onclick="goPage('dashboard',this)" data-tooltip="Tableau de bord"><div class="ni-icon">🏠</div><span class="ni-lbl">Tableau de bord</span></div>
+      <div class="nav-it" onclick="goPage('dossiers',this)" data-tooltip="Dossiers"><div class="ni-icon">📁</div><span class="ni-lbl">Tous les dossiers</span></div>
+      <div class="sb-nav-lbl">Dossier actif</div>
+      <div class="nav-it" onclick="goPage('profil',this)" data-tooltip="Profil"><div class="ni-icon">👤</div><span class="ni-lbl">Profil Général</span></div>
+      <div class="nav-it" onclick="goPage('evenements',this)" data-tooltip="Événements"><div class="ni-icon">📋</div><span class="ni-lbl">Événements</span></div>
+      <div class="nav-it" onclick="goPage('traumatismes',this)" data-tooltip="Traumatismes"><div class="ni-icon">⚡</div><span class="ni-lbl">Traumatismes</span></div>
+      <div class="nav-it" onclick="goPage('conflits',this)" data-tooltip="Conflits"><div class="ni-icon">⚖️</div><span class="ni-lbl">Conflits internes</span></div>
+      <div class="nav-it" onclick="goPage('comportements',this)" data-tooltip="Comportements"><div class="ni-icon">🔄</div><span class="ni-lbl">Comportements</span></div>
+      <div class="nav-it" onclick="goPage('risques',this)" data-tooltip="Risques"><div class="ni-icon">⚠️</div><span class="ni-lbl">Risques</span></div>
+      <div class="nav-it" onclick="goPage('questions',this)" data-tooltip="Questions"><div class="ni-icon">❓</div><span class="ni-lbl">Questions</span><span class="ni-badge" id="nb-q">0%</span></div>
+      <div class="nav-it" onclick="goPage('recommandations',this)" data-tooltip="Recommandations"><div class="ni-icon">✅</div><span class="ni-lbl">Recommandations</span></div>
+      <div class="nav-it" onclick="goPage('parametres',this)" data-tooltip="Paramètres"><div class="ni-icon">⚙️</div><span class="ni-lbl">Paramètres</span></div>
+    </nav>
+    <div class="sb-foot">
+      <div class="sb-user-badge">
+        <div class="sub-avatar" id="sb-avatar">?</div>
+        <div class="sub-info"><div class="sub-name" id="sb-uname">—</div><div class="sub-role" id="sb-urole">Praticien</div></div>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Changer le thème">
+        <span class="sa-icon" id="theme-icon">🌙</span>
+        <span id="theme-lbl">Thème sombre</span>
+        <div class="tt-track"><div class="tt-thumb"></div></div>
+      </button>
+      <button class="sb-action" onclick="exportJSON()"><span class="sa-icon">💾</span><span>Exporter dossier</span></button>
+      <button class="sb-action dng" onclick="confirmReset()"><span class="sa-icon">🗑️</span><span>Réinitialiser</span></button>
+      <button class="sb-action dng" onclick="logout()"><span class="sa-icon">🔓</span><span>Déconnexion</span></button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main" id="main">
+    <header class="topbar">
+      <div class="tb-left">
+        <div class="tb-dossier-badge"><span class="tdb-dot" id="tb-dot" style="background:var(--cyan)"></span><span class="tdb-name" id="tb-dosname">—</span></div>
+        <div class="tb-page-title" id="tb-title">Tableau de bord</div>
+      </div>
+      <div class="tb-right">
+        <div class="save-pill" id="save-pill"><span class="s-dot"></span> Sauvegardé</div>
+        <button class="btn-save-manual" onclick="manualSave()">💾 Sauvegarder</button>
+        <button class="btn-tb" onclick="exportJSON()">📤 Exporter</button>
+      </div>
+    </header>
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="page active" id="page-dashboard">
+      <div class="dash-hero">
+        <div class="stat-c sc-c" onclick="goPage('dossiers')">
+          <div class="sc-bar"></div>
+          <div class="stat-lbl">Dossiers</div>
+          <div class="stat-val" id="s-dos">0</div>
+          <div class="stat-sub">créés</div>
+        </div>
+        <div class="stat-c sc-b" onclick="goPage('evenements')">
+          <div class="sc-bar"></div>
+          <div class="stat-lbl">Événements</div>
+          <div class="stat-val" id="s-ev">0</div>
+          <div class="stat-sub">dossier actif</div>
+        </div>
+        <div class="stat-c sc-g" onclick="goPage('questions')">
+          <div class="sc-bar"></div>
+          <div class="stat-lbl">Progression</div>
+          <div class="stat-ring-wrap">
+            <svg class="stat-ring" width="56" height="56" viewBox="0 0 56 56">
+              <circle class="ring-bg" cx="28" cy="28" r="22"/>
+              <circle class="ring-fill" id="ring-fill" cx="28" cy="28" r="22" stroke-dasharray="138.2" stroke-dashoffset="138.2"/>
+            </svg>
+          </div>
+          <div class="stat-val" id="s-pct" style="font-size:22px;margin-top:-4px">0%</div>
+          <div class="stat-sub">questions abordées</div>
+        </div>
+        <div class="stat-c sc-a">
+          <div class="sc-bar"></div>
+          <div class="stat-lbl">Dernière modif.</div>
+          <div class="stat-val" style="font-size:17px;margin-top:8px;line-height:1.3" id="s-mod">—</div>
+          <div class="stat-sub">dossier actif</div>
+        </div>
+      </div>
+
+      <div class="dash-bottom">
+        <div>
+          <div class="dash-section-title">Chronologie — dossier actif</div>
+          <div class="dash-card">
+            <div class="tl-wrap" id="dash-tl">
+              <div style="color:var(--t3);font-size:13px;padding:8px 0">Aucun événement enregistré.</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="dash-section-title">Tous les dossiers</div>
+          <div class="dos-mini-list" id="dos-mini-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ DOSSIERS ══ -->
+    <div class="page" id="page-dossiers">
+      <div class="new-dos-form" id="new-dos-form">
+        <div style="font-family:var(--fH);font-size:16px;font-weight:700;margin-bottom:22px">➕ Nouveau dossier</div>
+        <div class="ndf-grid">
+          <div><label class="fl">Nom du dossier</label><input class="fi" id="ndf-name" type="text" placeholder="Ex: Dossier A…"></div>
+          <div><label class="fl">Catégorie / Type</label><input class="fi" id="ndf-cat" type="text" placeholder="Ex: Trauma, Adolescent…"></div>
+        </div>
+        <div style="margin-bottom:16px"><label class="fl">Statut</label>
+          <div class="ndf-status-row">
+            <button class="ndf-status-opt sel" data-val="nouveau" onclick="selStatus(this)">🟡 Nouveau</button>
+            <button class="ndf-status-opt" data-val="en cours" onclick="selStatus(this)">🔵 En cours</button>
+            <button class="ndf-status-opt" data-val="urgent" onclick="selStatus(this)">🔴 Urgent</button>
+            <button class="ndf-status-opt" data-val="cloture" onclick="selStatus(this)">🟢 Clôturé</button>
+          </div>
+        </div>
+        <div><label class="fl">Emoji / icône</label>
+          <div class="emoji-row" id="emoji-row">
+            <div class="emoji-opt sel" onclick="selEmoji(this,'👤')">👤</div>
+            <div class="emoji-opt" onclick="selEmoji(this,'🧒')">🧒</div>
+            <div class="emoji-opt" onclick="selEmoji(this,'👦')">👦</div>
+            <div class="emoji-opt" onclick="selEmoji(this,'👧')">👧</div>
+            <div class="emoji-opt" onclick="selEmoji(this,'🧑')">🧑</div>
+            <div class="emoji-opt" onclick="selEmoji(this,'👨')">👨</div>
+            <div class="emoji-opt" onclick="selEmoji(this,'👩')">👩</div>
+            <div class="emoji-opt" onclick="selEmoji(this,'🧓')">🧓</div>
+            <div class="emoji-opt" onclick="selEmoji(this,'💚')">💚</div>
+            <div class="emoji-opt" onclick="selEmoji(this,'💙')">💙</div>
+          </div>
+        </div>
+        <div style="margin-top:16px"><label class="fl">Couleur</label>
+          <div class="color-row" id="color-row">
+            <div class="color-opt sel" style="background:#00e5c8" onclick="selColor(this,'#00e5c8')"></div>
+            <div class="color-opt" style="background:#4d7cff" onclick="selColor(this,'#4d7cff')"></div>
+            <div class="color-opt" style="background:#9b6dff" onclick="selColor(this,'#9b6dff')"></div>
+            <div class="color-opt" style="background:#ff6b9d" onclick="selColor(this,'#ff6b9d')"></div>
+            <div class="color-opt" style="background:#ffb547" onclick="selColor(this,'#ffb547')"></div>
+            <div class="color-opt" style="background:#36d986" onclick="selColor(this,'#36d986')"></div>
+            <div class="color-opt" style="background:#ff4d6a" onclick="selColor(this,'#ff4d6a')"></div>
+            <div class="color-opt" style="background:#22d3ee" onclick="selColor(this,'#22d3ee')"></div>
+          </div>
+        </div>
+        <div class="ndf-actions">
+          <button class="btn-ndf-save" onclick="createDossier()">Créer le dossier</button>
+          <button class="btn-ndf-cancel" onclick="hideNewForm()">Annuler</button>
+        </div>
+      </div>
+      <!-- IMPORT -->
+      <div class="import-zone" id="import-zone" onclick="document.getElementById('import-file').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleImportDrop(event)">
+        <div class="iz-icon">📥</div>
+        <strong style="font-family:var(--fH);font-size:13px;color:var(--t1)">Importer un dossier JSON</strong>
+        <p>Cliquez ou glissez un fichier .json exporté depuis PsyTrack</p>
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="handleImportFile(this)">
+      </div>
+      <div class="dos-grid" id="dos-grid"></div>
+    </div>
+
+    <!-- ══ PROFIL ══ -->
+    <div class="page" id="page-profil">
+      <div class="card glow">
+        <div class="ch" onclick="togCard(this)"><div class="ch-left"><div class="c-ico ic-cyan">👤</div><div><div class="ch-title">Profil Général</div><div class="ch-sub">Présentation synthétique de la situation</div></div></div><button class="ch-tog" tabindex="-1">▲</button></div>
+        <div class="cb open"><div id="ib-profil"></div><span class="flbl">📋 Résumé</span><textarea class="fta" id="f-profil" rows="8" oninput="autoSave()" placeholder="Résumé général de la situation…"></textarea></div>
+      </div>
+    </div>
+
+    <!-- ══ ÉVÉNEMENTS ══ -->
+    <div class="page" id="page-evenements">
+      <div class="card">
+        <div class="ch" onclick="togCard(this)"><div class="ch-left"><div class="c-ico ic-amber">📋</div><div><div class="ch-title">Événements de Vie</div><div class="ch-sub">Chronologie des expériences significatives</div></div></div><button class="ch-tog" tabindex="-1">▲</button></div>
+        <div class="cb open">
+          <div id="ib-evenements"></div>
+          <div class="tw"><table class="et"><thead><tr><th style="min-width:150px">Type</th><th style="min-width:210px">Description</th><th style="min-width:210px">Impact psychologique probable</th><th style="width:42px"></th></tr></thead><tbody id="ev-body"></tbody></table></div>
+          <button class="btn-add-row" onclick="addEvRow()">＋ Ajouter un événement</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TRAUMATISMES ══ -->
+    <div class="page" id="page-traumatismes">
+      <div class="card">
+        <div class="ch" onclick="togCard(this)"><div class="ch-left"><div class="c-ico ic-red">⚡</div><div><div class="ch-title">Traumatismes Identifiés</div><div class="ch-sub">Analyse des blessures psychologiques majeures</div></div></div><button class="ch-tog" tabindex="-1">▲</button></div>
+        <div class="cb open"><div id="ib-traumatismes"></div><span class="flbl">🔍 Analyse</span><textarea class="fta" id="f-trauma" rows="9" oninput="autoSave()" placeholder="Décrire les traumatismes identifiés…"></textarea></div>
+      </div>
+    </div>
+
+    <!-- ══ CONFLITS ══ -->
+    <div class="page" id="page-conflits">
+      <div class="card">
+        <div class="ch" onclick="togCard(this)"><div class="ch-left"><div class="c-ico ic-violet">⚖️</div><div><div class="ch-title">Conflits Internes</div><div class="ch-sub">Tensions psychologiques et ambivalences</div></div></div><button class="ch-tog" tabindex="-1">▲</button></div>
+        <div class="cb open"><div id="ib-conflits"></div><span class="flbl">⚖️ Tensions et ambivalences</span><textarea class="fta" id="f-conflits" rows="8" oninput="autoSave()" placeholder="Décrire les conflits internes…"></textarea></div>
+      </div>
+    </div>
+
+    <!-- ══ COMPORTEMENTS ══ -->
+    <div class="page" id="page-comportements">
+      <div class="card">
+        <div class="ch" onclick="togCard(this)"><div class="ch-left"><div class="c-ico ic-teal">🔄</div><div><div class="ch-title">Comportements Actuels</div><div class="ch-sub">Manifestations observables dans le quotidien</div></div></div><button class="ch-tog" tabindex="-1">▲</button></div>
+        <div class="cb open"><span class="flbl">🔍 Comportements observés</span><textarea class="fta" id="f-comportements" rows="8" oninput="autoSave()" placeholder="Décrire les comportements actuels…"></textarea></div>
+      </div>
+    </div>
+
+    <!-- ══ RISQUES ══ -->
+    <div class="page" id="page-risques">
+      <div class="card">
+        <div class="ch" onclick="togCard(this)"><div class="ch-left"><div class="c-ico ic-red">⚠️</div><div><div class="ch-title">Risques Psychologiques</div><div class="ch-sub">Facteurs de vulnérabilité à surveiller</div></div></div><button class="ch-tog" tabindex="-1">▲</button></div>
+        <div class="cb open"><div id="ib-risques"></div><span class="flbl">⚠️ Risques identifiés</span><textarea class="fta" id="f-risques" rows="8" oninput="autoSave()" placeholder="Lister les risques et leur niveau d'urgence…"></textarea></div>
+      </div>
+    </div>
+
+    <!-- ══ QUESTIONS ══ -->
+    <div class="page" id="page-questions">
+      <div class="card">
+        <div class="ch" onclick="togCard(this)"><div class="ch-left"><div class="c-ico ic-cyan">❓</div><div><div class="ch-title">Questions à Poser</div><div class="ch-sub">Guide d'entretien interactif</div></div></div><button class="ch-tog" tabindex="-1">▲</button></div>
+        <div class="cb open">
+          <div class="prog-wrap">
+            <div class="prog-top"><span class="prog-lbl" id="prog-lbl">0 / 0 abordées</span><span class="prog-pct" id="prog-pct">0%</span></div>
+            <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+          </div>
+          <div id="q-container"></div>
+          <hr class="dv">
+          <span class="flbl">＋ Ajouter une question</span>
+          <div class="add-q-row">
+            <select class="aq-sel" id="nq-th">
+              <option value="trauma">🔴 Trauma</option>
+              <option value="père">🔵 Père / Parent</option>
+              <option value="émotions">🟡 Émotions</option>
+              <option value="vie actuelle">🟢 Vie actuelle</option>
+              <option value="enfance">🟣 Enfance</option>
+              <option value="relations">🔵 Relations</option>
+              <option value="identité">🩷 Identité / Soi</option>
+            </select>
+            <input class="aq-inp" id="nq-txt" type="text" placeholder="Rédigez votre question…" onkeydown="if(event.key==='Enter')addQ()">
+            <button class="btn-add-q" onclick="addQ()">Ajouter</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ RECOMMANDATIONS ══ -->
+    <div class="page" id="page-recommandations">
+      <div class="card">
+        <div class="ch" onclick="togCard(this)"><div class="ch-left"><div class="c-ico ic-green">✅</div><div><div class="ch-title">Recommandations</div><div class="ch-sub">Orientations thérapeutiques et axes de travail</div></div></div><button class="ch-tog" tabindex="-1">▲</button></div>
+        <div class="cb open"><div id="ib-recommandations"></div><span class="flbl">📌 Recommandations thérapeutiques</span><textarea class="fta" id="f-recommandations" rows="10" oninput="autoSave()" placeholder="Décrire les recommandations…"></textarea></div>
+      </div>
+    </div>
+
+
+    <!-- PARAMÈTRES -->
+    <div class="page" id="page-parametres">
+      <div class="settings-grid">
+        <div class="settings-section">
+          <div class="ss-title"><span class="ss-ico">🎨</span> Apparence</div>
+          <div class="setting-row">
+            <div class="sr-info"><div class="sr-label">Thème</div><div class="sr-desc">Clair ou sombre</div></div>
+            <div class="sr-control"><div class="seg-ctrl"><button class="seg-opt" id="seg-dark" onclick="setTheme('dark')">🌙 Sombre</button><button class="seg-opt" id="seg-light" onclick="setTheme('light')">☀️ Clair</button></div></div>
+          </div>
+          <div class="setting-row">
+            <div class="sr-info"><div class="sr-label">Densité</div><div class="sr-desc">Espacement de l'interface</div></div>
+            <div class="sr-control"><div class="seg-ctrl"><button class="seg-opt" id="seg-compact" onclick="setDensity('compact')">Compact</button><button class="seg-opt" id="seg-normal" onclick="setDensity('normal')">Normal</button><button class="seg-opt" id="seg-spacious" onclick="setDensity('spacious')">Spacieux</button></div></div>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="ss-title"><span class="ss-ico">🌐</span> Langue</div>
+          <div class="setting-row">
+            <div class="sr-info"><div class="sr-label">Français / English</div><div class="sr-desc">Langue de l'interface</div></div>
+            <div class="sr-control"><div class="seg-ctrl"><button class="seg-opt" id="seg-fr" onclick="setLang('fr')">🇫🇷 FR</button><button class="seg-opt" id="seg-en" onclick="setLang('en')">🇬🇧 EN</button></div></div>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="ss-title"><span class="ss-ico">🔐</span> Sécurité — Changer le mot de passe</div>
+          <div class="fg" style="margin-bottom:10px"><label class="fl">Mot de passe actuel</label><input class="fi" id="pw-old" type="password" style="padding:9px 13px;font-size:13px" placeholder="Actuel…"></div>
+          <div class="fg" style="margin-bottom:10px"><label class="fl">Nouveau mot de passe</label><input class="fi" id="pw-new" type="password" style="padding:9px 13px;font-size:13px" placeholder="Nouveau…"></div>
+          <div class="fg" style="margin-bottom:14px"><label class="fl">Confirmer</label><input class="fi" id="pw-confirm" type="password" style="padding:9px 13px;font-size:13px" placeholder="Confirmer…"></div>
+          <button class="btn-ndf-save" onclick="changePw()">Modifier le mot de passe</button>
+          <div class="pw-msg pw-ok" id="pw-success">✅ Mot de passe modifié !</div>
+          <div class="pw-msg pw-err" id="pw-error"></div>
+        </div>
+        <div class="settings-section">
+          <div class="ss-title"><span class="ss-ico">👤</span> Compte</div>
+          <div class="setting-row">
+            <div class="sr-info"><div class="sr-label">Connecté en tant que</div><div class="sr-desc" id="settings-username" style="font-weight:700;color:var(--cyan);margin-top:4px">—</div></div>
+          </div>
+          <div class="setting-row">
+            <div class="sr-info"><div class="sr-label">Mémoriser la connexion</div><div class="sr-desc">Identifiant + mdp pré-remplis à la reconnexion</div></div>
+            <div class="sr-control"><div class="toggle-sw" id="toggle-remember" onclick="toggleRemember()"><div class="ts-thumb"></div></div></div>
+          </div>
+          <div class="setting-row">
+            <div class="sr-info"><div class="sr-label">Version</div><div class="sr-desc">PsyTrack V6 — 100% local</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h3 id="modal-title">Confirmer</h3>
+    <p id="modal-desc">Cette action est irréversible.</p>
+    <div class="modal-btns">
+      <button class="btn-mc" onclick="closeModal()">Annuler</button>
+      <button class="btn-mo" id="modal-ok">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ADMIN_USER='ClementUrbin';
+let CU=null,CID=null,authMode='login',sbCollapsed=false,saveTO=null;
+let newFormEmoji='👤',newFormColor='#00e5c8',newFormStatus='nouveau',editingDosId=null;
+
+/* CURSOR */
+(function(){
+  const cur=document.getElementById('cursor');
+  const dot=document.getElementById('cursor-dot');
+  const ring=document.getElementById('cursor-ring');
+  let cx=0,cy=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{cx=e.clientX;cy=e.clientY;dot.style.left=cx+'px';dot.style.top=cy+'px';});
+  (function anim(){rx+=(cx-rx)*.14;ry+=(cy-ry)*.14;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);})();
+  document.addEventListener('mouseover',e=>{if(e.target.closest('button,a,.nav-it,.sb-dossier-item,.stat-c,.dos-card,.emoji-opt,.color-opt,.ndf-status-opt,.seg-opt,.toggle-sw,.import-zone'))document.body.classList.add('cursor-hover');});
+  document.addEventListener('mouseout',()=>document.body.classList.remove('cursor-hover'));
+  document.addEventListener('mousedown',()=>document.body.classList.add('cursor-click'));
+  document.addEventListener('mouseup',()=>document.body.classList.remove('cursor-click'));
+})();
+
+/* PARTICLES */
+function initParticles(){
+  const canvas=document.getElementById('particles-canvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  let W=canvas.width=window.innerWidth,H=canvas.height=window.innerHeight;
+  window.addEventListener('resize',()=>{W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;});
+  const pts=Array.from({length:55},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*2+.5,o:Math.random()*.4+.1}));
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(0,229,200,${p.o})`;ctx.fill();});
+    pts.forEach((a,i)=>pts.slice(i+1).forEach(b=>{const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<110){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(0,229,200,${.1*(1-d/110)})`;ctx.lineWidth=.5;ctx.stroke();}}));
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* THEME / DENSITY / LANG */
+function getTheme(){return localStorage.getItem('pt6_theme')||'dark';}
+function getDensity(){return localStorage.getItem('pt6_density')||'normal';}
+function getLang(){return localStorage.getItem('pt6_lang')||'fr';}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);syncSegs();}
+function applyDensity(d){document.documentElement.setAttribute('data-density',d);syncSegs();}
+function setTheme(t){localStorage.setItem('pt6_theme',t);applyTheme(t);}
+function setDensity(d){localStorage.setItem('pt6_density',d);applyDensity(d);}
+function toggleTheme(){
+  const cur=getTheme();
+  setTheme(cur==='dark'?'light':'dark');
+}
+
+function syncSegs(){
+  const th=getTheme(),den=getDensity(),lg=getLang();
+  ['dark','light'].forEach(v=>{const e=document.getElementById('seg-'+v);if(e)e.classList.toggle('active',th===v);});
+  ['compact','normal','spacious'].forEach(v=>{const e=document.getElementById('seg-'+v);if(e)e.classList.toggle('active',den===v);});
+  ['fr','en'].forEach(v=>{const e=document.getElementById('seg-'+v);if(e)e.classList.toggle('active',lg===v);});
+}
+
+/* I18N minimal */
+const I18N={
+  fr:{themeToggle:'Thème clair',saved:'Sauvegardé',settings:'Paramètres'},
+  en:{themeToggle:'Light theme',saved:'Saved',settings:'Settings'}
+};
+function setLang(l){localStorage.setItem('pt6_lang',l);syncSegs();}
+
+/* HASH */
+async function sha256(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}
+
+/* REMEMBER */
+function saveRemember(id,pw){localStorage.setItem('pt6_rem',JSON.stringify({id,pw}));}
+function clearRemember(){localStorage.removeItem('pt6_rem');}
+function loadRemember(){
+  try{const r=JSON.parse(localStorage.getItem('pt6_rem')||'null');if(r){document.getElementById('a-id').value=r.id||'';document.getElementById('a-pw').value=r.pw||'';document.getElementById('remember-me').checked=true;}}catch{}
+}
+function toggleRemember(){
+  const tog=document.getElementById('toggle-remember');
+  const on=!tog.classList.contains('on');
+  tog.classList.toggle('on',on);
+  if(!on)clearRemember();
+}
+function syncRememberToggle(){const tog=document.getElementById('toggle-remember');if(tog)tog.classList.toggle('on',!!localStorage.getItem('pt6_rem'));}
+
+/* AUTH */
+function switchTab(m){
+  authMode=m;
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&m==='login')||(i===1&&m==='register')));
+  document.getElementById('auth-btn').textContent=m==='login'?'Se connecter →':'Créer le compte →';
+  document.getElementById('auth-err').style.display='none';
+}
+async function handleAuth(){
+  const id=document.getElementById('a-id').value.trim();
+  const pw=document.getElementById('a-pw').value;
+  const err=document.getElementById('auth-err');err.style.display='none';
+  if(!id||!pw){showErr('⚠️ Remplissez tous les champs.');return;}
+  const users=getUsers(),hash=await sha256(pw);
+  if(authMode==='register'){
+    if(users[id]){showErr('❌ Identifiant déjà utilisé.');return;}
+    users[id]={hash};localStorage.setItem('pt6_users',JSON.stringify(users));
+    if(document.getElementById('remember-me').checked)saveRemember(id,pw);
+    CU=id;sessionStorage.setItem('pt6_sess',id);enterApp();
+  }else{
+    if(!users[id]||users[id].hash!==hash){showErr('❌ Identifiant ou mot de passe incorrect.');return;}
+    if(document.getElementById('remember-me').checked)saveRemember(id,pw);else clearRemember();
+    CU=id;sessionStorage.setItem('pt6_sess',id);enterApp();
+  }
+}
+function showErr(msg){const e=document.getElementById('auth-err');e.textContent=msg;e.style.display='block';e.style.animation='none';requestAnimationFrame(()=>{e.style.animation='shake .3s ease';});}
+function logout(){CU=null;CID=null;sessionStorage.removeItem('pt6_sess');document.getElementById('app').style.display='none';document.getElementById('auth').style.display='flex';loadRemember();}
+
+/* STORAGE */
+function getUsers(){try{return JSON.parse(localStorage.getItem('pt6_users')||'{}');}catch{return {};}}
+function getDossiers(){try{return JSON.parse(localStorage.getItem('pt6_dos_'+CU)||'[]');}catch{return [];}}
+function saveDossiers(l){localStorage.setItem('pt6_dos_'+CU,JSON.stringify(l));}
+function getCurrentDossier(){return getDossiers().find(d=>d.id===CID)||null;}
+function updateCurrentDossierData(data){const list=getDossiers(),idx=list.findIndex(d=>d.id===CID);if(idx===-1)return;data.lastModified=new Date().toISOString();list[idx].data=data;saveDossiers(list);}
+
+/* CHANGE PASSWORD */
+async function changePw(){
+  const oldV=document.getElementById('pw-old').value;
+  const newV=document.getElementById('pw-new').value;
+  const conf=document.getElementById('pw-confirm').value;
+  const succ=document.getElementById('pw-success');
+  const err=document.getElementById('pw-error');
+  succ.classList.remove('show');err.classList.remove('show');
+  if(!oldV||!newV||!conf){err.textContent='⚠️ Remplissez tous les champs.';err.classList.add('show');return;}
+  if(newV!==conf){err.textContent='❌ Les mots de passe ne correspondent pas.';err.classList.add('show');return;}
+  const users=getUsers(),oldHash=await sha256(oldV);
+  if(users[CU]?.hash!==oldHash){err.textContent='❌ Mot de passe actuel incorrect.';err.classList.add('show');return;}
+  users[CU].hash=await sha256(newV);localStorage.setItem('pt6_users',JSON.stringify(users));
+  const rem=localStorage.getItem('pt6_rem');if(rem)saveRemember(CU,newV);
+  ['pw-old','pw-new','pw-confirm'].forEach(id=>document.getElementById(id).value='');
+  succ.classList.add('show');setTimeout(()=>succ.classList.remove('show'),3000);
+}
+
+/* ENTER APP */
+function enterApp(){
+  document.getElementById('auth').style.display='none';
+  document.getElementById('app').style.display='block';
+  applyTheme(getTheme());applyDensity(getDensity());syncSegs();syncRememberToggle();
+  const su=document.getElementById('settings-username');if(su)su.textContent=CU;
+  document.getElementById('sb-avatar').textContent=CU.slice(0,2).toUpperCase();
+  document.getElementById('sb-uname').textContent=CU;
+  document.getElementById('sb-urole').textContent=CU===ADMIN_USER?'Administrateur':'Praticien';
+  let list=getDossiers();
+  if(CU===ADMIN_USER&&list.length===0){
+    list=[
+      {id:'dos_1',name:'Dossier 1',cat:'Traumatisme complexe',emoji:'🔵',color:'#4d7cff',status:'urgent',createdAt:new Date().toISOString(),data:defaultData1()},
+      {id:'dos_2',name:'Dossier 2',cat:'Mal-être adolescent',emoji:'💜',color:'#9b6dff',status:'en cours',createdAt:new Date().toISOString(),data:defaultData2()}
+    ];
+    saveDossiers(list);
+  }
+  CID=list.length>0?list[0].id:null;
+  renderInfoboxes();renderSBDossiers();renderDossiersPage();
+  if(CID)loadDossierData();
+  goPage('dashboard',document.querySelector('.nav-it'));updateDash();
+}
+
+/* SIDEBAR */
+function toggleSB(){sbCollapsed=!sbCollapsed;document.getElementById('sb').classList.toggle('collapsed',sbCollapsed);document.getElementById('main').classList.toggle('collapsed',sbCollapsed);}
+function renderSBDossiers(){
+  const list=getDossiers(),c=document.getElementById('sb-dossiers');
+  if(!list.length){c.innerHTML='<div style="padding:6px 10px;font-size:11px;color:var(--t3);font-style:italic">Aucun dossier</div>';document.getElementById('tb-dosname').textContent='—';return;}
+  c.innerHTML=list.map(d=>`<div class="sb-dossier-item ${d.id===CID?'active':''}" onclick="switchDossier('${d.id}')"><div class="di-avatar" style="background:${d.color}22;border-color:${d.color}44">${d.emoji}</div><div class="di-info"><div class="di-name">${esc(d.name)}</div><div class="di-tag">${esc(d.cat)}</div></div><button class="di-del" onclick="event.stopPropagation();confirmDelDossier('${d.id}')">✕</button></div>`).join('');
+  const cur=list.find(d=>d.id===CID);
+  if(cur){document.getElementById('tb-dosname').textContent=cur.name;document.getElementById('tb-dot').style.background=cur.color;}
+}
+function switchDossier(id){CID=id;renderSBDossiers();renderDossiersPage();loadDossierData();goPage('dashboard',document.querySelector('.nav-it'));updateDash();}
+
+/* STATUS BADGE */
+function statusBadge(s){
+  const cls={urgent:'sb-urgent','en cours':'sb-encours',cloture:'sb-cloture',nouveau:'sb-nouveau'}[s]||'sb-nouveau';
+  const ico={urgent:'🔴','en cours':'🔵',cloture:'🟢',nouveau:'🟡'}[s]||'🟡';
+  return `<span class="status-badge ${cls}">${ico} ${esc(s||'nouveau')}</span>`;
+}
+
+/* DOSSIERS PAGE */
+function renderDossiersPage(){
+  const list=getDossiers(),grid=document.getElementById('dos-grid');
+  if(!list.length){grid.innerHTML=`<div class="btn-add-dos-card" onclick="showNewForm()"><span class="add-icon">＋</span><span>Créer votre premier dossier</span></div>`;return;}
+  grid.innerHTML=list.map(d=>{
+    const ev=(d.data?.events||[]).length,qs=d.data?.questions||[];
+    const done=qs.filter(q=>q.checked).length,pct=qs.length?Math.round(done/qs.length*100):0;
+    const created=d.createdAt?new Date(d.createdAt).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}):'—';
+    return `<div class="dos-card ${d.id===CID?'active-dos':''}" style="border-top-color:${d.color}">
+      <div class="dc-top"><div class="dc-avatar" style="background:${d.color}22;border-color:${d.color}44">${d.emoji}</div><div class="dc-meta"><h3 ondblclick="startRename(this,'${d.id}')" title="Double-clic pour renommer">${esc(d.name)}</h3><span>${esc(d.cat)}</span></div></div>
+      <div class="dc-dates">📅 Créé le ${created}</div>
+      <div class="dc-stats"><div class="dc-stat"><strong>${ev}</strong>événements</div><div class="dc-stat"><strong>${pct}%</strong>progression</div></div>
+      <div class="dc-prog"><div class="dc-prog-fill" style="width:${pct}%"></div></div>
+      <div class="dc-footer">${statusBadge(d.status||'nouveau')}<div class="dc-actions"><button class="btn-open-dos" style="background:linear-gradient(135deg,${d.color},${d.color}aa)" onclick="switchDossier('${d.id}');goPage('profil')">${d.id===CID?'✓ Actif':'Ouvrir →'}</button><button class="btn-edit-dos" onclick="openEditForm('${d.id}')">✏️</button><button class="btn-del-dos" onclick="confirmDelDossier('${d.id}')">🗑️</button></div></div>
+    </div>`;
+  }).join('');
+  grid.innerHTML+=`<div class="btn-add-dos-card" onclick="showNewForm()"><span class="add-icon">＋</span><span>Nouveau dossier</span></div>`;
+}
+
+/* RENAME */
+function startRename(el,id){
+  el.contentEditable='true';el.focus();
+  const sel=window.getSelection(),range=document.createRange();range.selectNodeContents(el);sel.removeAllRanges();sel.addRange(range);
+  function done(){el.contentEditable='false';const n=el.textContent.trim();if(!n){renderDossiersPage();return;}const list=getDossiers(),idx=list.findIndex(d=>d.id===id);if(idx!==-1){list[idx].name=n;saveDossiers(list);renderSBDossiers();renderDossiersPage();}}
+  el.onblur=done;el.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();el.blur();}if(e.key==='Escape'){el.textContent=getDossiers().find(d=>d.id===id)?.name||'';el.blur();}};
+}
+
+/* EDIT FORM */
+function openEditForm(id){
+  editingDosId=id;const d=getDossiers().find(x=>x.id===id);if(!d)return;
+  document.getElementById('ndf-name').value=d.name;document.getElementById('ndf-cat').value=d.cat;
+  newFormEmoji=d.emoji;newFormColor=d.color;newFormStatus=d.status||'nouveau';
+  document.querySelectorAll('.emoji-opt').forEach(e=>e.classList.toggle('sel',e.textContent===d.emoji));
+  document.querySelectorAll('.color-opt').forEach(e=>e.classList.toggle('sel',e.style.background===d.color));
+  document.querySelectorAll('.ndf-status-opt').forEach(e=>e.classList.toggle('sel',e.dataset.val===newFormStatus));
+  showNewForm();
+}
+function showNewForm(){document.getElementById('new-dos-form').classList.add('open');setTimeout(()=>document.getElementById('ndf-name').focus(),50);}
+function hideNewForm(){document.getElementById('new-dos-form').classList.remove('open');document.getElementById('ndf-name').value='';document.getElementById('ndf-cat').value='';editingDosId=null;document.querySelectorAll('.ndf-status-opt').forEach(e=>e.classList.toggle('sel',e.dataset.val==='nouveau'));}
+function selEmoji(el,emoji){document.querySelectorAll('.emoji-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');newFormEmoji=emoji;}
+function selColor(el,color){document.querySelectorAll('.color-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');newFormColor=color;}
+function selStatus(el){document.querySelectorAll('.ndf-status-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');newFormStatus=el.dataset.val;}
+function createDossier(){
+  const name=document.getElementById('ndf-name').value.trim(),cat=document.getElementById('ndf-cat').value.trim();
+  if(!name){alert('Donnez un nom au dossier.');return;}
+  const list=getDossiers();
+  if(editingDosId){
+    const idx=list.findIndex(x=>x.id===editingDosId);
+    if(idx!==-1){list[idx].name=name;list[idx].cat=cat||'Non classé';list[idx].emoji=newFormEmoji;list[idx].color=newFormColor;list[idx].status=newFormStatus;saveDossiers(list);}
+  }else{
+    const id='dos_'+Date.now();
+    list.push({id,name,cat:cat||'Non classé',emoji:newFormEmoji,color:newFormColor,status:newFormStatus,createdAt:new Date().toISOString(),data:emptyData()});
+    saveDossiers(list);CID=id;loadDossierData();
+  }
+  hideNewForm();renderSBDossiers();renderDossiersPage();
+  if(!editingDosId)goPage('profil');
+}
+
+/* IMPORT */
+function handleImportFile(input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{importDossier(JSON.parse(e.target.result));}catch{alert('Fichier JSON invalide.');}};r.readAsText(f);input.value='';}
+function handleImportDrop(e){e.preventDefault();document.getElementById('import-zone').classList.remove('drag-over');const f=e.dataTransfer.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{importDossier(JSON.parse(ev.target.result));}catch{alert('Fichier JSON invalide.');}};r.readAsText(f);}
+function importDossier(obj){
+  if(!obj.data||!obj.name){alert('Format non reconnu.');return;}
+  const list=getDossiers(),id='dos_imp_'+Date.now();
+  list.push({id,name:obj.name+' (importé)',cat:obj.cat||'Importé',emoji:obj.emoji||'📥',color:obj.color||'#00e5c8',status:'en cours',createdAt:new Date().toISOString(),data:obj.data});
+  saveDossiers(list);CID=id;renderSBDossiers();renderDossiersPage();loadDossierData();
+  showSaved();alert('✅ Dossier "'+obj.name+'" importé avec succès !');
+}
+
+/* LOAD DATA */
+function loadDossierData(){
+  if(!CID){clearFields();return;}
+  const d=getCurrentDossier(),data=d?.data||emptyData();
+  document.getElementById('f-profil').value=data.profil||'';
+  document.getElementById('f-trauma').value=data.trauma||'';
+  document.getElementById('f-conflits').value=data.conflits||'';
+  document.getElementById('f-comportements').value=data.comportements||'';
+  document.getElementById('f-risques').value=data.risques||'';
+  document.getElementById('f-recommandations').value=data.recommandations||'';
+  document.getElementById('ev-body').innerHTML='';
+  (data.events||[]).forEach(e=>addEvRow(e));
+  renderQ(data.questions||[]);
+}
+function clearFields(){['f-profil','f-trauma','f-conflits','f-comportements','f-risques','f-recommandations'].forEach(id=>{document.getElementById(id).value='';});document.getElementById('ev-body').innerHTML='';renderQ([]);}
+
+/* SAVE */
+function collect(){
+  const events=[],questions=[];
+  document.querySelectorAll('#ev-body tr').forEach(r=>{const i=r.querySelectorAll('input,textarea');events.push({type:i[0]?.value||'',desc:i[1]?.value||'',impact:i[2]?.value||''});});
+  document.querySelectorAll('.q-it').forEach(el=>questions.push({theme:el.dataset.theme||'',text:el.dataset.text||'',checked:el.querySelector('input[type=checkbox]')?.checked||false}));
+  return{profil:document.getElementById('f-profil').value,trauma:document.getElementById('f-trauma').value,conflits:document.getElementById('f-conflits').value,comportements:document.getElementById('f-comportements').value,risques:document.getElementById('f-risques').value,recommandations:document.getElementById('f-recommandations').value,events,questions};
+}
+function autoSave(){if(!CID)return;clearTimeout(saveTO);saveTO=setTimeout(()=>{updateCurrentDossierData(collect());showSaved();updateDash();},600);}
+function manualSave(){if(!CID)return;updateCurrentDossierData(collect());showSaved();updateDash();}
+function showSaved(){const p=document.getElementById('save-pill');p.classList.add('show');clearTimeout(p._t);p._t=setTimeout(()=>p.classList.remove('show'),2600);}
+
+/* NAV */
+const PAGE_TITLES={dashboard:'Tableau de bord',dossiers:'Tous les dossiers',profil:'Profil Général',evenements:'Événements de Vie',traumatismes:'Traumatismes',conflits:'Conflits Internes',comportements:'Comportements',risques:'Risques Psychologiques',questions:'Questions',recommandations:'Recommandations',parametres:'Paramètres'};
+function goPage(id,navEl){
+  const prev=document.querySelector('.page.active');
+  if(prev&&prev.id!=='page-'+id){prev.classList.remove('visible');setTimeout(()=>{prev.classList.remove('active');showPage(id,navEl);},200);}
+  else showPage(id,navEl);
+}
+function showPage(id,navEl){
+  const pg=document.getElementById('page-'+id);
+  if(pg){pg.classList.add('active');requestAnimationFrame(()=>requestAnimationFrame(()=>pg.classList.add('visible')));}
+  if(navEl){document.querySelectorAll('.nav-it').forEach(n=>n.classList.remove('active'));navEl.classList.add('active');}
+  document.getElementById('tb-title').textContent=PAGE_TITLES[id]||'';
+  if(id==='dashboard')updateDash();
+  if(id==='dossiers')renderDossiersPage();
+  if(id==='parametres')syncSegs();
+}
+
+/* CARD TOGGLE */
+function togCard(h){const b=h.nextElementSibling,btn=h.querySelector('.ch-tog');btn.textContent=b.classList.toggle('open')?'▲':'▼';}
+
+/* EVENTS */
+function addEvRow(e){e=e||{type:'',desc:'',impact:''};const tr=document.createElement('tr');tr.innerHTML=`<td><input type="text" value="${esc(e.type)}" placeholder="Type…" oninput="autoSave()"></td><td><textarea placeholder="Description…" oninput="autoSave()">${esc(e.desc)}</textarea></td><td><textarea placeholder="Impact…" oninput="autoSave()">${esc(e.impact)}</textarea></td><td><button class="btn-del-row" onclick="this.closest('tr').remove();autoSave()">🗑️</button></td>`;document.getElementById('ev-body').appendChild(tr);}
+
+/* QUESTIONS */
+const THEMES={'trauma':{cls:'tt-r',label:'🔴 Trauma'},'père':{cls:'tt-b',label:'🔵 Parent'},'émotions':{cls:'tt-y',label:'🟡 Émotions'},'vie actuelle':{cls:'tt-g',label:'🟢 Vie actuelle'},'enfance':{cls:'tt-v',label:'🟣 Enfance'},'relations':{cls:'tt-c',label:'🩵 Relations'},'identité':{cls:'tt-ro',label:'🩷 Identité'}};
+function renderQ(questions){const c=document.getElementById('q-container');c.innerHTML='';const groups={};questions.forEach(q=>{const t=q.theme||'autre';if(!groups[t])groups[t]=[];groups[t].push(q);});Object.entries(groups).forEach(([th,qs])=>{const cfg=THEMES[th]||{cls:'tt-b',label:'📌 '+th};const div=document.createElement('div');div.className='th-block';div.dataset.theme=th;div.innerHTML=`<span class="th-tag ${cfg.cls}">${cfg.label}</span>`;qs.forEach(q=>div.appendChild(mkQ(th,q.text,q.checked)));c.appendChild(div);});updateProg();}
+function mkQ(theme,text,checked){const el=document.createElement('div');el.className='q-it'+(checked?' done':'');el.dataset.theme=theme;el.dataset.text=text;el.innerHTML=`<input type="checkbox" class="q-cb" ${checked?'checked':''} onchange="toggleQ(this)"><span class="q-txt" onclick="this.previousElementSibling.click()">${esc(text)}</span><button class="q-rm" onclick="this.closest('.q-it').remove();updateProg();autoSave()">✕</button>`;return el;}
+function toggleQ(cb){cb.closest('.q-it').classList.toggle('done',cb.checked);updateProg();autoSave();}
+function addQ(){const theme=document.getElementById('nq-th').value,text=document.getElementById('nq-txt').value.trim();if(!text)return;let block=document.querySelector(`.th-block[data-theme="${theme}"]`);if(!block){const cfg=THEMES[theme]||{cls:'tt-b',label:'📌 '+theme};block=document.createElement('div');block.className='th-block';block.dataset.theme=theme;block.innerHTML=`<span class="th-tag ${cfg.cls}">${cfg.label}</span>`;document.getElementById('q-container').appendChild(block);}block.appendChild(mkQ(theme,text,false));document.getElementById('nq-txt').value='';updateProg();autoSave();}
+function updateProg(){const all=document.querySelectorAll('.q-it'),done=document.querySelectorAll('.q-it.done'),pct=all.length?Math.round(done.length/all.length*100):0;document.getElementById('prog-fill').style.width=pct+'%';document.getElementById('prog-pct').textContent=pct+'%';document.getElementById('prog-lbl').textContent=`${done.length} / ${all.length} abordées`;document.getElementById('nb-q').textContent=pct+'%';}
+
+/* DASHBOARD */
+function updateDash(){
+  const list=getDossiers(),d=getCurrentDossier(),data=d?.data||{};
+  const ev=(data.events||[]).length,qs=data.questions||[],done=qs.filter(q=>q.checked).length,pct=qs.length?Math.round(done/qs.length*100):0;
+  document.getElementById('s-dos').textContent=list.length;
+  document.getElementById('s-ev').textContent=ev;
+  document.getElementById('s-pct').textContent=pct+'%';
+  const fill=document.getElementById('ring-fill');if(fill)fill.style.strokeDashoffset=138.2-(138.2*pct/100);
+  document.getElementById('s-mod').textContent=data.lastModified?new Date(data.lastModified).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
+  const tl=document.getElementById('dash-tl');
+  tl.innerHTML=(data.events||[]).length?(data.events).map((e,i)=>`<div class="tl-item" style="animation-delay:${i*.05}s"><div class="tl-type">${esc(e.type)||'Événement'}</div><div class="tl-desc">${esc(e.desc)||'—'}</div></div>`).join(''):'<div style="color:var(--t3);font-size:13px;padding:8px 0">Aucun événement enregistré.</div>';
+  const ml=document.getElementById('dos-mini-list');
+  if(ml)ml.innerHTML=list.length?list.map(dos=>{const q=dos.data?.questions||[],dp=q.length?Math.round(q.filter(x=>x.checked).length/q.length*100):0;return`<div class="dos-mini-item ${dos.id===CID?'active-dos':''}" onclick="switchDossier('${dos.id}')"><div class="dmi-ava" style="background:${dos.color}22;border-color:${dos.color}44">${dos.emoji}</div><div class="dmi-info"><div class="dmi-name">${esc(dos.name)}</div><div class="dmi-meta">${statusBadge(dos.status||'nouveau')}</div></div><div class="dmi-pctbar"><div class="dmi-pctfill" style="width:${dp}%"></div></div><div class="dmi-pct">${dp}%</div></div>`;}).join(''):'<div style="color:var(--t3);font-size:13px">Aucun dossier.</div>';
+}
+
+/* INFOBOXES */
+function renderInfoboxes(){
+  const a=CU===ADMIN_USER;
+  const map={'ib-profil':a?'<div class="ib ib-c"><span class="ib-ico">ℹ️</span><div><strong>Note clinique</strong>Ce résumé reprend les éléments essentiels. Modifiable à tout moment.</div></div>':''
+  ,'ib-evenements':a?'<div class="ib ib-o"><span class="ib-ico">📌</span><div><strong>Objectif</strong>Recenser les événements marquants pour identifier leur poids psychologique cumulatif.</div></div>':''
+  ,'ib-traumatismes':a?'<div class="ib ib-r"><span class="ib-ico">⚡</span><div><strong>TSPT</strong>Manifestations : reviviscences, cauchemars, hypervigilance, évitement.</div></div>':''
+  ,'ib-conflits':a?'<div class="ib ib-v"><span class="ib-ico">⚖️</span><div><strong>Définition</strong>Tensions entre besoins, émotions ou désirs contradictoires.</div></div>':''
+  ,'ib-risques':a?'<div class="ib ib-r"><span class="ib-ico">⚠️</span><div><strong>Vigilance clinique</strong>Identifier les facteurs de risque pour orienter l\'accompagnement.</div></div>':''
+  ,'ib-recommandations':a?'<div class="ib ib-g"><span class="ib-ico">📌</span><div><strong>Rappel déontologique</strong>Ces recommandations sont des pistes de travail clinique, non des diagnostics.</div></div>':''};
+  Object.entries(map).forEach(([id,html])=>{const el=document.getElementById(id);if(el)el.innerHTML=html;});
+}
+
+/* EXPORT */
+function exportJSON(){const d=getCurrentDossier();if(!d)return;const out={...d,exportedAt:new Date().toISOString(),user:CU};out.data=collect();const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`psytrack-${d.name.replace(/\s+/g,'-')}-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url);}
+
+/* RESET / DELETE */
+function confirmReset(){const d=getCurrentDossier();showModal('🗑️ Réinitialiser',`Effacer toutes les données de "${d?.name}" ?`,()=>{const list=getDossiers(),idx=list.findIndex(x=>x.id===CID);if(idx!==-1){if(CU===ADMIN_USER&&CID==='dos_1')list[idx].data=defaultData1();else if(CU===ADMIN_USER&&CID==='dos_2')list[idx].data=defaultData2();else list[idx].data=emptyData();saveDossiers(list);loadDossierData();updateDash();}closeModal();});}
+function confirmDelDossier(id){const d=getDossiers().find(x=>x.id===id);showModal('🗑️ Supprimer',`Supprimer définitivement "${d?.name}" ?`,()=>{let l=getDossiers().filter(x=>x.id!==id);saveDossiers(l);CID=l.length>0?l[0].id:null;renderSBDossiers();renderDossiersPage();if(CID)loadDossierData();else clearFields();updateDash();closeModal();});}
+
+/* MODAL */
+function showModal(title,desc,onOk){document.getElementById('modal-title').textContent=title;document.getElementById('modal-desc').textContent=desc;document.getElementById('modal-ok').onclick=onOk;document.getElementById('modal-bg').classList.add('show');}
+function closeModal(){document.getElementById('modal-bg').classList.remove('show');}
+document.getElementById('modal-bg').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+
+/* UTIL */
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function emptyData(){return{lastModified:null,profil:'',trauma:'',conflits:'',comportements:'',risques:'',recommandations:'',events:[],questions:[]};}
+
+/* DEFAULT DATA 1 */
+function defaultData1(){return{lastModified:null,profil:`Jeune personne ayant grandi dans un contexte familial marqué par des violences physiques répétées, une relation paternelle traumatique et une instabilité émotionnelle majeure. Placé(e) en centre d'accueil depuis 8 mois suite à un décrochage scolaire. A récemment perdu deux figures proches (meilleur ami décédé, cousine décédée). Le père, après un abandon, est réapparu depuis 1 mois.`,trauma:`TRAUMATISMES CUMULATIFS IDENTIFIÉS :
+
+1. Violence physique chronique — Traumatisme complexe
+2. Séquestration paternelle (2 ans) — Impuissance, dissociation possible
+3. Tentatives d'homicide / menace armée — TSPT haute intensité
+4. Violence conjugale witnessée — Trauma vicariant
+5. Deuils traumatiques récents (ami, cousine)
+
+TSPT probable : reviviscences, hypervigilance, évitement.`,conflits:`Ambivalence centrale — figure paternelle :
+— Refus du retour / maintien du contact téléphonique
+Conflit identitaire — réseau de soutien effondré`,comportements:`• Décrochage scolaire → placement
+• Maintien du contact avec le père : attachement ambivalent
+• Capacité à poser des limites verbales`,risques:`🔴 Décompensation psychique
+🔴 Emprise paternelle
+🟠 Deuils non élaborés
+🟠 Isolement affectif`,recommandations:`1. Alliance thérapeutique (priorité absolue)
+2. Évaluation TSPT — orientation EMDR / TCC trauma
+3. Travail sur l'attachement traumatique
+4. Élaboration des deuils
+5. Reconstruction du réseau de soutien`,events:[{type:'Violence physique chronique',desc:"Violences répétées depuis l'enfance, auteur : le père.",impact:'Traumatisme complexe, hypervigilance.'},{type:'Séquestration paternelle',desc:'Retenu(e) par le père pendant 2 ans.',impact:'TSPT probable, impuissance.'},{type:"Tentative d'homicide",desc:'Le père a braqué une arme à feu.',impact:'Trauma extrême, TSPT haute intensité.'},{type:'Décès — meilleur ami',desc:'Mort du meilleur ami.',impact:'Deuil traumatique.'},{type:'Décès — cousine',desc:'Décès de la cousine.',impact:'Deuil cumulatif.'},{type:'Placement en centre',desc:'Arrêt de la scolarité → placement il y a 8 mois.',impact:'Rupture des routines.'},{type:'Réapparition paternelle',desc:'Le père réapparu il y a 1 mois.',impact:'Réactivation des traumas, ambivalence.'}],questions:[{theme:'trauma',text:"Quand tu penses à ton père, qu'est-ce qui se passe dans ton corps ?",checked:false},{theme:'trauma',text:"Est-ce qu'il y a des images qui reviennent sans que tu le veuilles ?",checked:false},{theme:'père',text:'Comment tu te sens quand tu lui parles — avant, pendant, après ?',checked:false},{theme:'père',text:"Tu as dit non quand il a voulu revenir — qu'est-ce qui t'a donné cette force ?",checked:false},{theme:'émotions',text:"Est-ce qu'il t'arrive de penser que tu préférerais ne plus être là ?",checked:false},{theme:'vie actuelle',text:"C'est quoi pour toi un avenir possible — même flou ?",checked:false}]};}
+
+/* DEFAULT DATA 2 */
+function defaultData2(){return{lastModified:null,profil:`Adolescent(e) de 17 ans présentant un mal-être psychologique profond et chronique depuis l'enfance (dès 5 ans). Contexte familial émotionnellement carencé. A développé très tôt une "carapace" : ne rien montrer, gérer seul. Depuis 3 ans : anhédonie, irritabilité, insomnie, vide intérieur. Premier suivi psychologique — démarche volontaire.`,trauma:`TRAUMATISMES DÉVELOPPEMENTAUX :
+
+1. Carence affective précoce (dès 5 ans)
+2. Parentification émotionnelle implicite
+3. Apprentissage du silence comme survie
+4. Accumulation non traitée — 3+ ans
+
+Profil : dysthymie probable, anxiété généralisée, attachement évitant, alexithymie partielle.`,conflits:`— Colère qui "sort toute seule" puis culpabilité
+— "Être fort" perçu comme identité, pas comme défense
+— Besoin de sécurité + peur de l'abandon
+— "Je ne parle à personne" vs "j'ai besoin d'aide"`,comportements:`• Mode automatique / dissociation fonctionnelle
+• Anhédonie progressive
+• Insomnie chronique par rumination
+• Irritabilité suivie de culpabilité
+• Autocritique sévère
+⚠️ "J'aimerais que tout s'arrête" — à explorer`,risques:`🔴 Idéation passive — à évaluer
+🟠 Dépression non diagnostiquée
+🟠 Isolement affectif
+🟠 Alexithymie / somatisation`,recommandations:`1. Légitimer la souffrance (priorité absolue)
+2. Évaluation PHQ-9, GAD-7, idéation suicidaire
+3. Travail sur l'expression émotionnelle
+4. TCC ou approche humaniste
+5. Valorisation des ressources`,events:[{type:'Carence affective précoce',desc:"Dès 5 ans, absence de disponibilité émotionnelle parentale.",impact:'Insécurité affective, carapace défensive.'},{type:'Parentification émotionnelle',desc:'Forcé(e) à gérer seul(e) trop tôt.',impact:'Épuisement, privation de dépendance saine.'},{type:'Apprentissage du silence',desc:'"Parler ne sert à rien."',impact:'Inhibition émotionnelle sévère.'},{type:'Accumulation émotionnelle',desc:'Depuis ~3 ans, symptômes croissants.',impact:'Risque de décompensation.'},{type:"Première démarche d'aide",desc:'À 17 ans, consultation volontaire.',impact:'Ressource thérapeutique majeure.'}],questions:[{theme:'enfance',text:"Quand tu dis que quelque chose n'allait pas dès 5 ans, quel souvenir vient ?",checked:false},{theme:'enfance',text:"Y a-t-il eu un moment précis où tu as décidé de ne plus parler ?",checked:false},{theme:'émotions',text:"La colère qui sort toute seule — qu'est-ce qui se passe juste avant ?",checked:false},{theme:'émotions',text:"Les pensées 'j'aimerais que tout s'arrête' — à quelle fréquence ?",checked:false},{theme:'identité',text:"Si tu enlèves la carapace — qui es-tu sans ça ?",checked:false},{theme:'vie actuelle',text:"Énergie émotionnelle sur une jauge 0-10 aujourd'hui, tu mettrais quoi ?",checked:false},{theme:'vie actuelle',text:"Qu'est-ce que tu espères de ce suivi ?",checked:false}]};}
+
+/* INIT */
+document.addEventListener('DOMContentLoaded',()=>{
+  applyTheme(getTheme());applyDensity(getDensity());
+  initParticles();loadRemember();
+  const sess=sessionStorage.getItem('pt6_sess');
+  if(sess&&getUsers()[sess]){CU=sess;enterApp();return;}
+  document.getElementById('auth').style.display='flex';
+  ['a-id','a-pw'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')handleAuth();}));
+});
+</script>
+</body>
+</html>
