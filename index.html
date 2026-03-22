@@ -1137,7 +1137,13 @@ function enterApp(){
   CID=list.length>0?list[0].id:null;
   renderInfoboxes();renderSBDossiers();renderDossiersPage();
   if(CID)loadDossierData();
-  goPage('dashboard',document.querySelector('.nav-it'));updateDash();
+  goPage('dashboard',document.querySelector('.nav-it'));
+  updateDash();
+  // Forcer visible sur la page active initiale
+  setTimeout(()=>{
+    const pg=document.getElementById('page-dashboard');
+    if(pg){pg.classList.add('active','visible');}
+  },50);
 }
 
 /* SIDEBAR */
@@ -1257,13 +1263,16 @@ function showSaved(){const p=document.getElementById('save-pill');p.classList.ad
 /* NAV */
 const PAGE_TITLES={dashboard:'Tableau de bord',dossiers:'Tous les dossiers',profil:'Profil Général',evenements:'Événements de Vie',traumatismes:'Traumatismes',conflits:'Conflits Internes',comportements:'Comportements',risques:'Risques Psychologiques',questions:'Questions',recommandations:'Recommandations',parametres:'Paramètres'};
 function goPage(id,navEl){
+  if(window.innerWidth<=768) closeMobileSB();
   const prev=document.querySelector('.page.active');
-  if(prev&&prev.id!=='page-'+id){prev.classList.remove('visible');setTimeout(()=>{prev.classList.remove('active');showPage(id,navEl);},200);}
-  else showPage(id,navEl);
+  if(prev&&prev.id!=='page-'+id){
+    prev.classList.remove('visible','active');
+    showPage(id,navEl);
+  } else showPage(id,navEl);
 }
 function showPage(id,navEl){
   const pg=document.getElementById('page-'+id);
-  if(pg){pg.classList.add('active');requestAnimationFrame(()=>requestAnimationFrame(()=>pg.classList.add('visible')));}
+  if(pg){pg.classList.add('active');setTimeout(()=>pg.classList.add('visible'),20);}
   if(navEl){document.querySelectorAll('.nav-it').forEach(n=>n.classList.remove('active'));navEl.classList.add('active');}
   document.getElementById('tb-title').textContent=PAGE_TITLES[id]||'';
   if(id==='dashboard')updateDash();
