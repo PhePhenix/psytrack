@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080a0f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PsyTrack">
+<link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22PsyTrack%22%2C%22short_name%22%3A%22PsyTrack%22%2C%22description%22%3A%22Suivi%20clinique%20multi-dossiers%22%2C%22start_url%22%3A%22https%3A%2F%2Fphephenix.github.io%2Fpsytrack%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23080a0f%22%2C%22theme_color%22%3A%22%2300e5c8%22%2C%22orientation%22%3A%22portrait%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fphephenix.github.io%2Fpsytrack%2Ficon.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+
 <title>PsyTrack V6</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
@@ -1268,6 +1275,26 @@ Profil : dysthymie probable, anxiété généralisée, attachement évitant, ale
 3. Travail sur l'expression émotionnelle
 4. TCC ou approche humaniste
 5. Valorisation des ressources`,events:[{type:'Carence affective précoce',desc:"Dès 5 ans, absence de disponibilité émotionnelle parentale.",impact:'Insécurité affective, carapace défensive.'},{type:'Parentification émotionnelle',desc:'Forcé(e) à gérer seul(e) trop tôt.',impact:'Épuisement, privation de dépendance saine.'},{type:'Apprentissage du silence',desc:'"Parler ne sert à rien."',impact:'Inhibition émotionnelle sévère.'},{type:'Accumulation émotionnelle',desc:'Depuis ~3 ans, symptômes croissants.',impact:'Risque de décompensation.'},{type:"Première démarche d'aide",desc:'À 17 ans, consultation volontaire.',impact:'Ressource thérapeutique majeure.'}],questions:[{theme:'enfance',text:"Quand tu dis que quelque chose n'allait pas dès 5 ans, quel souvenir vient ?",checked:false},{theme:'enfance',text:"Y a-t-il eu un moment précis où tu as décidé de ne plus parler ?",checked:false},{theme:'émotions',text:"La colère qui sort toute seule — qu'est-ce qui se passe juste avant ?",checked:false},{theme:'émotions',text:"Les pensées 'j'aimerais que tout s'arrête' — à quelle fréquence ?",checked:false},{theme:'identité',text:"Si tu enlèves la carapace — qui es-tu sans ça ?",checked:false},{theme:'vie actuelle',text:"Énergie émotionnelle sur une jauge 0-10 aujourd'hui, tu mettrais quoi ?",checked:false},{theme:'vie actuelle',text:"Qu'est-ce que tu espères de ce suivi ?",checked:false}]};}
+
+
+/* SERVICE WORKER — PWA */
+if('serviceWorker' in navigator){
+  const swCode = `
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open('psytrack-v6').then(cache => cache.addAll(['/psytrack/', '/psytrack/index.html']))
+  );
+});
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('/psytrack/')))
+  );
+});
+`;
+  const blob = new Blob([swCode], {type: 'application/javascript'});
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).then(() => console.log('SW registered')).catch(()=>{});
+}
 
 /* INIT */
 document.addEventListener('DOMContentLoaded',()=>{
