@@ -92,7 +92,7 @@ body{font-family:var(--fB);background:var(--bg);color:var(--t1);min-height:100vh
 
 /* CURSOR */
 body{cursor:none}
-#cursor{position:fixed;pointer-events:none;z-index:99999}
+#cursor{position:fixed;pointer-events:none;z-index:99999;opacity:0;transition:opacity .3s}
 #cursor-dot{width:6px;height:6px;background:var(--cyan);border-radius:50%;position:absolute;transform:translate(-50%,-50%);box-shadow:0 0 8px var(--cyan);transition:transform .1s}
 #cursor-ring{width:28px;height:28px;border:1.5px solid rgba(0,229,200,0.6);border-radius:50%;position:absolute;transform:translate(-50%,-50%);transition:width .15s,height .15s,opacity .15s}
 .cursor-hover #cursor-ring{width:42px;height:42px;opacity:.9}
@@ -247,7 +247,7 @@ input,textarea,select{cursor:text}
 /* ═══════════════════════════════════════════════
    PAGES
 ═══════════════════════════════════════════════ */
-.page{display:none;padding:32px 36px 90px;opacity:0;transform:translateY(10px);transition:opacity .28s var(--ease),transform .28s var(--ease)}
+.page{display:none;padding:32px 36px 90px;}
 .page.active{display:block}
 .page.visible{opacity:1;transform:translateY(0)}
 
@@ -996,7 +996,11 @@ let newFormEmoji='👤',newFormColor='#00e5c8',newFormStatus='nouveau',editingDo
   const dot=document.getElementById('cursor-dot');
   const ring=document.getElementById('cursor-ring');
   let cx=0,cy=0,rx=0,ry=0;
-  document.addEventListener('mousemove',e=>{cx=e.clientX;cy=e.clientY;dot.style.left=cx+'px';dot.style.top=cy+'px';});
+  document.addEventListener('mousemove',e=>{
+    cx=e.clientX;cy=e.clientY;
+    dot.style.left=cx+'px';dot.style.top=cy+'px';
+    cur.style.opacity='1';
+  });
   (function anim(){rx+=(cx-rx)*.14;ry+=(cy-ry)*.14;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);})();
   document.addEventListener('mouseover',e=>{if(e.target.closest('button,a,.nav-it,.sb-dossier-item,.stat-c,.dos-card,.emoji-opt,.color-opt,.ndf-status-opt,.seg-opt,.toggle-sw,.import-zone'))document.body.classList.add('cursor-hover');});
   document.addEventListener('mouseout',()=>document.body.classList.remove('cursor-hover'));
@@ -1127,23 +1131,30 @@ function enterApp(){
   document.getElementById('sb-uname').textContent=CU;
   document.getElementById('sb-urole').textContent=CU===ADMIN_USER?'Administrateur':'Praticien';
   let list=getDossiers();
-  if(CU===ADMIN_USER&&list.length===0){
-    list=[
-      {id:'dos_1',name:'Dossier 1',cat:'Traumatisme complexe',emoji:'🔵',color:'#4d7cff',status:'urgent',createdAt:new Date().toISOString(),data:defaultData1()},
-      {id:'dos_2',name:'Dossier 2',cat:'Mal-être adolescent',emoji:'💜',color:'#9b6dff',status:'en cours',createdAt:new Date().toISOString(),data:defaultData2()}
-    ];
-    saveDossiers(list);
+  if(CU===ADMIN_USER){
+    if(list.length===0){
+      list=[
+        {id:'dos_1',name:'Dossier 1',cat:'Traumatisme complexe',emoji:'🔵',color:'#4d7cff',status:'urgent',createdAt:new Date().toISOString(),data:defaultData1()},
+        {id:'dos_2',name:'Dossier 2',cat:'Mal-être adolescent',emoji:'💜',color:'#9b6dff',status:'en cours',createdAt:new Date().toISOString(),data:defaultData2()}
+      ];
+      saveDossiers(list);
+    } else {
+      // Repeupler les dossiers admin si les données cliniques sont vides
+      let changed=false;
+      list=list.map(d=>{
+        if(d.id==='dos_1'&&!d.data?.profil){d.data=defaultData1();changed=true;}
+        if(d.id==='dos_2'&&!d.data?.profil){d.data=defaultData2();changed=true;}
+        return d;
+      });
+      if(changed)saveDossiers(list);
+    }
   }
   CID=list.length>0?list[0].id:null;
   renderInfoboxes();renderSBDossiers();renderDossiersPage();
   if(CID)loadDossierData();
   goPage('dashboard',document.querySelector('.nav-it'));
   updateDash();
-  // Forcer visible sur la page active initiale
-  setTimeout(()=>{
-    const pg=document.getElementById('page-dashboard');
-    if(pg){pg.classList.add('active','visible');}
-  },50);
+
 }
 
 /* SIDEBAR */
@@ -1264,15 +1275,12 @@ function showSaved(){const p=document.getElementById('save-pill');p.classList.ad
 const PAGE_TITLES={dashboard:'Tableau de bord',dossiers:'Tous les dossiers',profil:'Profil Général',evenements:'Événements de Vie',traumatismes:'Traumatismes',conflits:'Conflits Internes',comportements:'Comportements',risques:'Risques Psychologiques',questions:'Questions',recommandations:'Recommandations',parametres:'Paramètres'};
 function goPage(id,navEl){
   if(window.innerWidth<=768) closeMobileSB();
-  const prev=document.querySelector('.page.active');
-  if(prev&&prev.id!=='page-'+id){
-    prev.classList.remove('visible','active');
-    showPage(id,navEl);
-  } else showPage(id,navEl);
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  showPage(id,navEl);
 }
 function showPage(id,navEl){
   const pg=document.getElementById('page-'+id);
-  if(pg){pg.classList.add('active');setTimeout(()=>pg.classList.add('visible'),20);}
+  if(pg){pg.classList.add('active');}
   if(navEl){document.querySelectorAll('.nav-it').forEach(n=>n.classList.remove('active'));navEl.classList.add('active');}
   document.getElementById('tb-title').textContent=PAGE_TITLES[id]||'';
   if(id==='dashboard')updateDash();
@@ -1417,12 +1425,7 @@ function closeMobileSB(){
   document.getElementById('sb').classList.remove('mobile-open');
   document.getElementById('sb-overlay').classList.remove('show');
 }
-/* Fermer la sidebar mobile après navigation */
-const _origGoPage=goPage;
-function goPage(id,navEl){
-  if(window.innerWidth<=768) closeMobileSB();
-  _origGoPage(id,navEl);
-}
+
 /* Swipe gauche pour fermer la sidebar sur mobile */
 (function(){
   let startX=0,startY=0;
